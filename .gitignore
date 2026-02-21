@@ -1,0 +1,18 @@
+# MCP server (downloaded by setup script)
+mcp-server/
+
+# Build artifacts
+dist/
+*.zip
+
+# Tools downloaded by setup
+.tools/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store

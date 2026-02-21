@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "revit": {
+      "type": "http",
+      "url": "https://YOUR-DOMAIN.ngrok-free.app/mcp"
+    }
+  }
+}
