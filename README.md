@@ -1,6 +1,6 @@
 # Revit MCP Plugin
 
-Natural-language building design for Autodesk Revit 2026 via Claude.
+Natural-language building design for Autodesk Revit 2024/2025/2026 via Claude.
 
 Describe buildings in plain English — Claude creates BIM elements in Revit automatically. 31 MCP tools for architects, structural engineers, and MEP engineers.
 
@@ -19,7 +19,7 @@ You speak naturally. Claude translates your intent into precise Revit operations
 | Requirement | Why |
 |-------------|-----|
 | Windows 10/11 | Revit is Windows-only |
-| Autodesk Revit 2026 | The BIM application |
+| Autodesk Revit 2024, 2025, or 2026 | The BIM application |
 | pyRevit | Runs the HTTP routes inside Revit (port 48884) |
 | Git | To clone this repo |
 | Internet connection | For ngrok tunnel and MCP server download |
@@ -52,7 +52,7 @@ The setup script automatically:
 
 ### Step 4: Each session
 
-1. Open Revit 2026 with a project file
+1. Open Revit (2024, 2025, or 2026) with a project file
 2. Double-click **`start-revit-mcp.bat`**
 3. Wait for "READY!" message
 4. Use Cowork — your plugin is connected
@@ -145,7 +145,7 @@ revit-mcp-plugin/
 
 ## Requirements
 
-- **Autodesk Revit 2026** (earlier versions not supported)
+- **Autodesk Revit 2024, 2025, or 2026**
 - **pyRevit** installed and loaded in Revit
 - **Windows 10/11**
 
