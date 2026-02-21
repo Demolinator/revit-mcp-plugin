@@ -19,7 +19,7 @@
       },
       "homepage": "https://github.com/Demolinator/revit-mcp-plugin",
       "repository": "https://github.com/Demolinator/revit-mcp-plugin",
-      "license": "MIT",
+      "license": "Apache-2.0",
       "keywords": ["revit", "bim", "architecture", "building-design", "mcp", "structural", "mep"],
       "category": "engineering"
     }

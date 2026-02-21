@@ -5,9 +5,9 @@
     "name": "Talal Ahmed",
     "email": "talal@demolinator.com"
   },
-  "homepage": "https://github.com/Demolinator/revit-mcp",
-  "repository": "https://github.com/Demolinator/revit-mcp",
-  "license": "MIT",
+  "homepage": "https://github.com/Demolinator/revit-mcp-plugin",
+  "repository": "https://github.com/Demolinator/revit-mcp-plugin",
+  "license": "Apache-2.0",
   "keywords": [
     "revit", "bim", "architecture", "building-design", "cad", "mcp",
     "structural", "mep", "construction", "documentation", "analysis",
