@@ -151,7 +151,7 @@ revit-mcp-plugin/
 
 ## Author
 
-**Talal Ahmed** | Mentor: Sir Zia Khan
+**Talal Ahmed**
 
 ## License
 
