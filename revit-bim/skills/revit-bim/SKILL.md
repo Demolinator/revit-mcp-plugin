@@ -13,7 +13,7 @@ version: 2.0.0
 
 # Revit BIM Design
 
-Create, modify, and analyze building designs in Autodesk Revit 2026 through natural language. All building professionals — architects, structural engineers, MEP engineers — describe what they want, and elements are created automatically via 31 MCP tools connected to the live Revit model.
+Create, modify, and analyze building designs in Autodesk Revit 2024/2025/2026 through natural language. All building professionals — architects, structural engineers, MEP engineers, and interior designers — describe what they want, and elements are created automatically via 45 MCP tools connected to the live Revit model.
 
 ## Core Principles
 
@@ -39,24 +39,25 @@ Follow this order when designing a building from scratch:
 
 Detailed step-by-step workflow: `references/building-design-sequence.md`
 
-## Available Tools (31)
+## Available Tools (45)
 
 | Category | Tools | Use For |
 |----------|-------|---------|
-| **Create** | `create_line_based_element`, `create_surface_based_element`, `create_level`, `place_family`, `create_grid`, `create_structural_framing`, `create_sheet`, `create_schedule` | Walls, floors, roofs, levels, families, grids, beams, sheets, schedules |
-| **Query** | `get_revit_status`, `get_revit_model_info`, `list_levels`, `list_families`, `list_family_categories`, `get_revit_view`, `list_revit_views`, `get_current_view_info`, `get_current_view_elements`, `get_selected_elements`, `ai_element_filter` | Status, model info, levels, families, views, elements, selection, filtering |
-| **Modify** | `delete_elements`, `modify_element`, `color_splash`, `clear_colors`, `list_category_parameters` | Delete, edit parameters, colorize, reset colors |
-| **Analyze** | `export_room_data`, `get_material_quantities`, `analyze_model_statistics` | Rooms, materials, model stats |
-| **Document** | `create_dimensions`, `tag_walls`, `export_document` | Dimensions, tags, export to PDF/PNG/DWG |
+| **Create** | `create_level`, `create_line_based_element`, `create_surface_based_element`, `place_family`, `create_grid`, `create_structural_framing`, `create_sheet`, `create_schedule`, `create_room`, `create_room_separation`, `create_duct`, `create_pipe`, `create_mep_system`, `create_detail_line`, `create_view` | Walls, floors, roofs, levels, families, grids, beams, sheets, schedules, rooms, ducts, pipes, MEP systems, detail lines, views |
+| **Query** | `get_revit_status`, `get_revit_model_info`, `list_levels`, `list_families`, `list_family_categories`, `get_revit_view`, `list_revit_views`, `get_current_view_info`, `get_current_view_elements`, `get_selected_elements`, `list_category_parameters`, `get_element_properties` | Status, model info, levels, families, views, elements, selection, filtering, parameters |
+| **Modify** | `delete_elements`, `modify_element`, `color_splash`, `clear_colors`, `tag_walls`, `set_parameter`, `tag_elements`, `transform_elements`, `set_active_view` | Delete, edit parameters, colorize, reset colors, tag, move/copy/rotate/mirror, switch views |
+| **Analyze** | `ai_element_filter`, `export_room_data`, `get_material_quantities`, `analyze_model_statistics` | Element filtering, rooms, materials, model stats |
+| **Document** | `create_dimensions`, `export_document` | Dimensions, export to PDF/PNG/DWG |
+| **Interop** | `export_ifc`, `link_file` | IFC export, DWG/DXF/DGN/RVT linking |
 | **Advanced** | `execute_revit_code` | Arbitrary IronPython — escape hatch for anything not covered |
 
 Full tool reference with parameters: `references/available-tools.md`
 
 ## Three-Tier Tool Strategy
 
-1. **Tier 1 — Dedicated Tools (31)**: Use these first. They handle validation, error messages, and unit conversion automatically.
-2. **Tier 2 — Skill-Guided `execute_revit_code`**: For operations without a dedicated tool (MEP routing, advanced structural, complex documentation). Use the reference files for IronPython code templates.
-3. **Tier 3 — Raw `execute_revit_code`**: For truly novel operations. Write IronPython 2.7 code directly. Constraints: no f-strings, no type hints, `.format()` only, `element.Id.Value` for Revit 2026.
+1. **Tier 1 — Dedicated Tools (45)**: Use these first. They handle validation, error messages, and unit conversion automatically. Now includes MEP (ducts, pipes, systems), rooms, views, transforms, parameters, IFC export, and file linking.
+2. **Tier 2 — Skill-Guided `execute_revit_code`**: For operations without a dedicated tool (advanced structural, complex documentation). Use the reference files for IronPython code templates.
+3. **Tier 3 — Raw `execute_revit_code`**: For truly novel operations. Write IronPython 2.7 code directly. Constraints: no f-strings, no type hints, `.format()` only.
 
 Tier 2 reference files:
 - `references/mep-workflows.md` — Duct, pipe, electrical circuit templates

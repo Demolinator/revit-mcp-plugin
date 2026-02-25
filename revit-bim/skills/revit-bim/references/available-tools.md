@@ -1,10 +1,10 @@
-# Available MCP Tools (31)
+# Available MCP Tools (45)
 
 Complete reference for all Revit MCP tools. All dimensions are in **millimeters** unless noted. The server converts to Revit's internal feet automatically.
 
 ---
 
-## CREATE Tools (8)
+## CREATE Tools (15)
 
 ### create_level
 
@@ -238,7 +238,198 @@ Create a schedule (quantity takeoff view) for a category.
 
 ---
 
-## QUERY Tools (11)
+### create_room
+
+Create a room in the Revit model at a specified level. Rooms must be placed inside enclosed areas (bounded by walls or room separation lines).
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `level_name` | string | Yes | Target level name (e.g., "Level 1") |
+| `location` | object | No | Placement point `{"x", "y"}` in mm. Auto-places if omitted |
+| `name` | string | No | Room name (e.g., "Living Room") |
+| `number` | string | No | Room number (e.g., "101") |
+
+**Example:**
+```json
+{
+  "level_name": "Ground Floor",
+  "location": {"x": 5000, "y": 5000},
+  "name": "Living Room",
+  "number": "101"
+}
+```
+
+---
+
+### create_room_separation
+
+Create room separation lines to define room boundaries where physical walls don't fully enclose a space.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `lines` | array | Yes | List of line segments, each with `start_point` and `end_point` `{"x", "y", "z"}` in mm |
+| `level_name` | string | No | Target level name (defaults to active view's level) |
+| `view_name` | string | No | Plan view name (defaults to active view) |
+
+**Example:**
+```json
+{
+  "lines": [
+    {
+      "start_point": {"x": 3000, "y": 5000, "z": 0},
+      "end_point": {"x": 7000, "y": 5000, "z": 0}
+    }
+  ],
+  "level_name": "Ground Floor"
+}
+```
+
+---
+
+### create_duct
+
+Create a duct between two points. Requires a project with mechanical families loaded (MEP template).
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `start_point` | object | Yes | `{"x", "y", "z"}` in mm |
+| `end_point` | object | Yes | `{"x", "y", "z"}` in mm |
+| `system_type` | string | No | System type name (e.g., "Supply Air"). Auto-detects if omitted |
+| `duct_type` | string | No | Duct type name (e.g., "Round Duct"). Auto-detects if omitted |
+| `level_name` | string | No | Level name. Defaults to nearest level |
+| `diameter` | float | No | Round duct diameter in mm |
+| `width` | float | No | Rectangular duct width in mm |
+| `height` | float | No | Rectangular duct height in mm |
+
+**Example — 300mm round supply duct:**
+```json
+{
+  "start_point": {"x": 0, "y": 0, "z": 3000},
+  "end_point": {"x": 5000, "y": 0, "z": 3000},
+  "system_type": "Supply Air",
+  "diameter": 300,
+  "level_name": "Ground Floor"
+}
+```
+
+---
+
+### create_pipe
+
+Create a pipe between two points. Requires a project with plumbing families loaded (MEP template).
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `start_point` | object | Yes | `{"x", "y", "z"}` in mm |
+| `end_point` | object | Yes | `{"x", "y", "z"}` in mm |
+| `system_type` | string | No | System type name (e.g., "Domestic Hot Water"). Auto-detects if omitted |
+| `pipe_type` | string | No | Pipe type name (e.g., "Copper"). Auto-detects if omitted |
+| `level_name` | string | No | Level name. Defaults to nearest level |
+| `diameter` | float | No | Pipe diameter in mm |
+
+**Example — 25mm hot water pipe:**
+```json
+{
+  "start_point": {"x": 0, "y": 0, "z": 1000},
+  "end_point": {"x": 3000, "y": 0, "z": 1000},
+  "system_type": "Domestic Hot Water",
+  "diameter": 25,
+  "level_name": "Ground Floor"
+}
+```
+
+---
+
+### create_mep_system
+
+Create a mechanical or piping system to group ducts or pipes for organization and analysis.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `system_type` | string | Yes | `"mechanical"` or `"piping"` |
+| `system_name` | string | Yes | Display name (e.g., "Level 1 Supply Air") |
+| `element_ids` | array[int] | No | Duct/pipe element IDs to add to the system |
+
+**Example:**
+```json
+{
+  "system_type": "mechanical",
+  "system_name": "Level 1 Supply Air",
+  "element_ids": [123456, 123457, 123458]
+}
+```
+
+---
+
+### create_detail_line
+
+Create a detail line for view-specific 2D annotation. Must be created in a plan, section, or detail view.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `start_point` | object | Yes | `{"x", "y", "z"}` in mm |
+| `end_point` | object | Yes | `{"x", "y", "z"}` in mm |
+| `view_name` | string | No | Target view name (defaults to active view) |
+| `line_style` | string | No | Line style name (e.g., "Medium Lines"). Uses default if omitted |
+
+**Example:**
+```json
+{
+  "start_point": {"x": 0, "y": 0, "z": 0},
+  "end_point": {"x": 5000, "y": 0, "z": 0},
+  "view_name": "Ground Floor Plan",
+  "line_style": "Medium Lines"
+}
+```
+
+---
+
+### create_view
+
+Create a new view in the Revit model. Supports floor plans, ceiling plans, sections, elevations, and 3D views.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `view_type` | string | Yes | `"floor_plan"`, `"ceiling_plan"`, `"section"`, `"elevation"`, or `"3d"` |
+| `name` | string | Yes | Display name for the new view |
+| `level_name` | string | Cond. | Required for `floor_plan` and `ceiling_plan` |
+| `section_box` | object | Cond. | Required for `section` — origin, direction, up, width, height, depth |
+
+**Example — floor plan:**
+```json
+{
+  "view_type": "floor_plan",
+  "name": "Ground Floor - Furniture Layout",
+  "level_name": "Ground Floor"
+}
+```
+
+**Example — section:**
+```json
+{
+  "view_type": "section",
+  "name": "Section A-A",
+  "section_box": {
+    "origin": {"x": 7500, "y": 5000, "z": 2000},
+    "direction": {"x": 0, "y": 1, "z": 0},
+    "up": {"x": 0, "y": 0, "z": 1},
+    "width": 15000,
+    "height": 8000,
+    "depth": 10000
+  }
+}
+```
+
+---
+
+## QUERY Tools (12)
 
 ### get_revit_status
 
@@ -352,7 +543,21 @@ Get available parameters for elements in a given category.
 
 ---
 
-## MODIFY Tools (5)
+### get_element_properties
+
+Get all properties and parameters of a Revit element — category, family, type, and complete parameter list.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `element_id` | int | Yes | Revit element ID to inspect |
+| `include_type_params` | bool | No | Include type parameters (default: true) |
+
+**Use when:** Inspecting element details, checking parameter values before modifying.
+
+---
+
+## MODIFY Tools (8)
 
 ### delete_elements
 
@@ -424,6 +629,99 @@ Tag all untagged walls in the current view.
 |------|------|----------|-------------|
 | `use_leader` | bool | No | Show leader lines (defaults to false) |
 | `tag_type_name` | string | No | Specific wall tag family type name |
+
+---
+
+### set_parameter
+
+Set a single parameter value on a Revit element. Auto-detects the parameter's storage type and converts the value accordingly.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `element_id` | int | Yes | Target element ID |
+| `parameter_name` | string | Yes | Parameter name (e.g., "Comments", "Mark") |
+| `value` | string | Yes | New value — auto-converted to correct type |
+
+**Example:**
+```json
+{
+  "element_id": 123456,
+  "parameter_name": "Comments",
+  "value": "Updated via MCP"
+}
+```
+
+---
+
+### tag_elements
+
+Tag elements with annotation symbols in a view. Works with walls, doors, windows, rooms, and other taggable categories.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `element_ids` | array[int] | Yes | Element IDs to tag |
+| `view_name` | string | No | View to place tags in (defaults to active view) |
+| `tag_type_name` | string | No | Tag family type name (auto-detects if omitted) |
+| `add_leader` | bool | No | Show leader line (default: false) |
+| `orientation` | string | No | `"horizontal"` or `"vertical"` (default: "horizontal") |
+| `offset` | object | No | Tag offset from element `{"x", "y"}` in mm |
+
+**Example:**
+```json
+{
+  "element_ids": [123456, 123457],
+  "add_leader": false,
+  "orientation": "horizontal"
+}
+```
+
+---
+
+### transform_elements
+
+Move, copy, rotate, or mirror elements. All coordinates in mm, angles in degrees.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `element_ids` | array[int] | Yes | Element IDs to transform |
+| `operation` | string | Yes | `"move"`, `"copy"`, `"rotate"`, or `"mirror"` |
+| `vector` | object | Cond. | `{"x", "y", "z"}` in mm — required for move/copy |
+| `axis_point` | object | Cond. | `{"x", "y", "z"}` in mm — required for rotate |
+| `angle` | float | Cond. | Degrees — required for rotate |
+| `mirror_plane` | object | Cond. | Required for mirror: `{"origin": {"x","y","z"}, "normal": {"x","y","z"}}` |
+
+**Example — move 2000mm east:**
+```json
+{
+  "element_ids": [123456],
+  "operation": "move",
+  "vector": {"x": 2000, "y": 0, "z": 0}
+}
+```
+
+**Example — rotate 45° around a point:**
+```json
+{
+  "element_ids": [123456],
+  "operation": "rotate",
+  "axis_point": {"x": 5000, "y": 5000, "z": 0},
+  "angle": 45
+}
+```
+
+---
+
+### set_active_view
+
+Switch the active view in Revit to the specified view. Use `list_revit_views` first to find available view names.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `view_name` | string | Yes | Name of the view to activate |
 
 ---
 
@@ -508,6 +806,51 @@ Export a view or sheet to PDF, image, or DWG format.
 
 ---
 
+## INTEROP Tools (2)
+
+### export_ifc
+
+Export the Revit model to IFC format. Supports IFC2x3 and IFC4.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `file_path` | string | Yes | Output file path (must end in `.ifc`) |
+| `ifc_version` | string | No | `"IFC2x3"` (default) or `"IFC4"` |
+| `export_base_quantities` | bool | No | Include IFC base quantities (default: true) |
+| `view_name` | string | No | Export only elements visible in this view |
+
+**Example:**
+```json
+{
+  "file_path": "C:\\Export\\model.ifc",
+  "ifc_version": "IFC4"
+}
+```
+
+---
+
+### link_file
+
+Link or import an external file into the Revit model. Supports DWG, DXF, DGN, and RVT.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `file_path` | string | Yes | Path to the file (DWG, DXF, DGN, or RVT) |
+| `mode` | string | No | `"link"` (default, maintains connection) or `"import"` (embeds copy) |
+| `position` | object | No | Placement offset `{"x", "y", "z"}` in mm |
+
+**Example:**
+```json
+{
+  "file_path": "C:\\CAD\\site_plan.dwg",
+  "mode": "link"
+}
+```
+
+---
+
 ## ADVANCED Tools (1)
 
 ### execute_revit_code
@@ -543,10 +886,11 @@ Execute IronPython 2.7 code directly in Revit's context. Use as an escape hatch 
 
 | Category | Count | Tools |
 |----------|-------|-------|
-| Create | 8 | create_level, create_line_based_element, create_surface_based_element, place_family, create_grid, create_structural_framing, create_sheet, create_schedule |
-| Query | 11 | get_revit_status, get_revit_model_info, list_levels, get_current_view_info, get_current_view_elements, list_revit_views, get_revit_view, list_families, list_family_categories, get_selected_elements, list_category_parameters |
-| Modify | 5 | delete_elements, modify_element, color_splash, clear_colors, tag_walls |
+| Create | 15 | create_level, create_line_based_element, create_surface_based_element, place_family, create_grid, create_structural_framing, create_sheet, create_schedule, create_room, create_room_separation, create_duct, create_pipe, create_mep_system, create_detail_line, create_view |
+| Query | 12 | get_revit_status, get_revit_model_info, list_levels, get_current_view_info, get_current_view_elements, list_revit_views, get_revit_view, list_families, list_family_categories, get_selected_elements, list_category_parameters, get_element_properties |
+| Modify | 8 | delete_elements, modify_element, color_splash, clear_colors, tag_walls, set_parameter, tag_elements, transform_elements, set_active_view |
 | Analyze | 4 | ai_element_filter, export_room_data, get_material_quantities, analyze_model_statistics |
 | Document | 3 | create_dimensions, export_document, create_schedule |
+| Interop | 2 | export_ifc, link_file |
 | Advanced | 1 | execute_revit_code |
-| **Total** | **31** | |
+| **Total** | **45** | |
