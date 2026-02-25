@@ -21,15 +21,21 @@ You speak naturally. Claude translates your intent into precise Revit operations
 | Windows 10/11 | Revit is Windows-only |
 | Autodesk Revit 2024, 2025, or 2026 | The BIM application |
 | pyRevit | Runs the HTTP routes inside Revit (port 48884) |
-| Git | To clone this repo |
 | Internet connection | For ngrok tunnel and MCP server download |
 
-### Step 1: Clone this repo
+### Step 1: Download this repo
 
+**Option A** — If you have Git:
 ```powershell
 git clone https://github.com/Demolinator/revit-mcp-plugin.git
 cd revit-mcp-plugin
 ```
+
+**Option B** — No Git (download ZIP):
+1. Go to https://github.com/Demolinator/revit-mcp-plugin
+2. Click the green **Code** button > **Download ZIP**
+3. Extract the ZIP to a folder on your computer
+4. Open that folder in File Explorer
 
 ### Step 2: One-time setup
 

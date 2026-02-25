@@ -18,7 +18,7 @@ $ErrorActionPreference = "Stop"
 $SCRIPT_DIR     = Split-Path -Parent $MyInvocation.MyCommand.Path
 $SERVER_DIR     = Join-Path $SCRIPT_DIR "mcp-server"
 $PLUGIN_DIR     = Join-Path $SCRIPT_DIR "revit-bim"
-$MCP_REPO_URL   = "https://github.com/Demolinator/revit-mcp.git"
+$MCP_REPO_URL   = "https://github.com/Demolinator/revit-mcp-server.git"
 $CONFIG_DIR     = Join-Path $env:APPDATA "RevitMCP"
 $CONFIG_FILE    = Join-Path $CONFIG_DIR "config.json"
 $DIST_DIR       = Join-Path $SCRIPT_DIR "dist"
@@ -463,30 +463,63 @@ Write-Step 4 $TOTAL_STEPS "Installing MCP server dependencies..."
 if (-not (Test-Path (Join-Path $SERVER_DIR "main.py"))) {
     Write-Info "MCP server not found locally. Downloading..."
 
-    if (-not (Test-CommandExists "git")) {
-        Abort "git is required to download the MCP server. Install Git from https://git-scm.com"
+    $downloaded = $false
+
+    # Method 1: Try git clone (fast, if git is installed)
+    if (-not $downloaded -and (Test-CommandExists "git")) {
+        try {
+            $tempClone = Join-Path $env:TEMP "revit-mcp-clone-$(Get-Random)"
+            Write-Info "Downloading via git clone..."
+            & git clone --depth 1 $MCP_REPO_URL $tempClone 2>&1 | Out-Null
+
+            if ($LASTEXITCODE -eq 0 -and (Test-Path (Join-Path $tempClone "main.py"))) {
+                Copy-Item -Recurse -Force $tempClone $SERVER_DIR
+                Remove-Item -Recurse -Force $tempClone -ErrorAction SilentlyContinue
+                Write-Ok "MCP server downloaded via git"
+                $downloaded = $true
+            } else {
+                Remove-Item -Recurse -Force $tempClone -ErrorAction SilentlyContinue
+                Write-Info "git clone failed, trying ZIP download..."
+            }
+        } catch {
+            Write-Info "git clone error: $($_.Exception.Message). Trying ZIP download..."
+        }
     }
 
-    try {
-        # Clone only the mcp-server directory using sparse checkout
-        $tempClone = Join-Path $env:TEMP "revit-mcp-clone-$(Get-Random)"
-        & git clone --depth 1 --filter=blob:none --sparse $MCP_REPO_URL $tempClone 2>&1 | Out-Null
-        Push-Location $tempClone
-        & git sparse-checkout set mcp-server 2>&1 | Out-Null
-        Pop-Location
+    # Method 2: Download ZIP from GitHub (no git required)
+    if (-not $downloaded) {
+        try {
+            $zipUrl = "https://github.com/Demolinator/revit-mcp-server/archive/refs/heads/master.zip"
+            $tempZip = Join-Path $env:TEMP "revit-mcp-server-$(Get-Random).zip"
+            $tempExtract = Join-Path $env:TEMP "revit-mcp-extract-$(Get-Random)"
 
-        $clonedServer = Join-Path $tempClone "mcp-server"
-        if (Test-Path (Join-Path $clonedServer "main.py")) {
-            Copy-Item -Recurse -Force $clonedServer $SERVER_DIR
-            Remove-Item -Recurse -Force $tempClone -ErrorAction SilentlyContinue
-            Write-Ok "MCP server downloaded successfully"
-        } else {
-            Remove-Item -Recurse -Force $tempClone -ErrorAction SilentlyContinue
-            Abort "Failed to download MCP server — main.py not found in clone."
+            Write-Info "Downloading ZIP from GitHub..."
+            $ProgressPreference = 'SilentlyContinue'
+            Invoke-WebRequest -Uri $zipUrl -OutFile $tempZip -UseBasicParsing
+            $ProgressPreference = 'Continue'
+
+            Write-Info "Extracting..."
+            Expand-Archive -Path $tempZip -DestinationPath $tempExtract -Force
+
+            # GitHub ZIPs extract to a subfolder named repo-branch
+            $extractedDir = Get-ChildItem -Path $tempExtract -Directory | Select-Object -First 1
+            if ($extractedDir -and (Test-Path (Join-Path $extractedDir.FullName "main.py"))) {
+                Copy-Item -Recurse -Force $extractedDir.FullName $SERVER_DIR
+                Write-Ok "MCP server downloaded via ZIP"
+                $downloaded = $true
+            } else {
+                Write-Fail "ZIP extraction did not produce expected files"
+            }
+
+            Remove-Item $tempZip -Force -ErrorAction SilentlyContinue
+            Remove-Item $tempExtract -Recurse -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Info "ZIP download failed: $($_.Exception.Message)"
         }
-    } catch {
-        Pop-Location -ErrorAction SilentlyContinue
-        Abort "Failed to download MCP server: $($_.Exception.Message)"
+    }
+
+    if (-not $downloaded) {
+        Abort "Could not download MCP server. Check your internet connection and try again."
     }
 }
 
@@ -534,7 +567,7 @@ if (-not $revitOk) {
     Write-Host ""
     Write-Host "      Revit is not required during setup." -ForegroundColor Gray
     Write-Host "      Make sure it's running before you use start-revit-mcp.bat" -ForegroundColor Gray
-    Write-Host "      Requirements: Revit 2026 open + pyRevit loaded + project open" -ForegroundColor Gray
+    Write-Host "      Requirements: Revit (2024/2025/2026) open + pyRevit loaded + project open" -ForegroundColor Gray
     Write-Host ""
 }
 
@@ -576,7 +609,7 @@ try {
 
 ## ~~revit
 
-The Revit MCP Server connects Claude to Autodesk Revit 2026 via the Model Context Protocol. It provides 31 tools for building design, model editing, structural systems, documentation, and analysis.
+The Revit MCP Server connects Claude to Autodesk Revit 2024/2025/2026 via the Model Context Protocol. It provides 45 tools for building design, model editing, structural systems, MEP, documentation, and analysis.
 
 **Connection**: Uses a permanent ngrok tunnel. Run ``start-revit-mcp.bat`` on your machine before using Cowork.
 
@@ -590,7 +623,7 @@ Claude Cowork --> https://$ngrokDomain/mcp --> ngrok tunnel --> MCP Server (loca
 
 ## Prerequisites
 
-- **Autodesk Revit 2026** installed and running with a project open
+- **Autodesk Revit 2024/2025/2026** installed and running with a project open
 - **pyRevit** installed (provides Routes on port 48884)
 - **start-revit-mcp.bat** running (starts MCP server + tunnel)
 
@@ -599,7 +632,7 @@ Claude Cowork --> https://$ngrokDomain/mcp --> ngrok tunnel --> MCP Server (loca
 | Problem | Cause | Fix |
 |---------|-------|-----|
 | "Failed to connect to Revit" | start script not running | Run ``start-revit-mcp.bat`` |
-| "No active Revit document" | Revit not open | Open Revit 2026 with a project |
+| "No active Revit document" | Revit not open | Open Revit with a project |
 | "Connection refused on 48884" | pyRevit not loaded | Check pyRevit tab in Revit |
 | Tools return errors | Invalid type names | Call ``list_families`` first |
 "@

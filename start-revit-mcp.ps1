@@ -239,7 +239,7 @@ if (-not $revitReady) {
     Write-Host "      Revit is not responding on port $REVIT_PORT." -ForegroundColor Red
     Write-Host ""
     Write-Host "      Please ensure:" -ForegroundColor Yellow
-    Write-Host "        1. Autodesk Revit 2026 is open" -ForegroundColor White
+    Write-Host "        1. Autodesk Revit (2024, 2025, or 2026) is open" -ForegroundColor White
     Write-Host "        2. A project file is open in Revit" -ForegroundColor White
     Write-Host "        3. pyRevit is installed and loaded" -ForegroundColor White
     Write-Host "           (look for the pyRevit tab in Revit's ribbon)" -ForegroundColor Gray

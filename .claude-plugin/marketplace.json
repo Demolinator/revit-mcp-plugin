@@ -5,14 +5,14 @@
     "email": "talal@demolinator.com"
   },
   "metadata": {
-    "description": "Natural-language building design for Autodesk Revit 2026 via MCP"
+    "description": "Natural-language building design for Autodesk Revit 2024/2025/2026 via MCP"
   },
   "plugins": [
     {
       "name": "revit-bim",
       "source": "./revit-bim",
-      "description": "Natural-language building design and BIM management for Autodesk Revit 2026. 31 MCP tools for architects, structural engineers, and MEP engineers.",
-      "version": "2.0.0",
+      "description": "Natural-language building design and BIM management for Autodesk Revit 2024/2025/2026. 45 MCP tools for architects, structural engineers, and MEP engineers.",
+      "version": "2.1.0",
       "author": {
         "name": "Talal Ahmed",
         "email": "talal@demolinator.com"
