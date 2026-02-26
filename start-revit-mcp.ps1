@@ -375,12 +375,15 @@ $ngrokLogFile = Join-Path $LOG_DIR "ngrok.log"
 "" | Set-Content $ngrokLogFile -ErrorAction SilentlyContinue
 
 try {
-    $ngrokArgs = "--log=stdout --log-format=logfmt http --domain=$NGROK_DOMAIN $MCP_PORT"
-    $script:ngrokProcess = Start-Process -FilePath "ngrok" `
-        -ArgumentList $ngrokArgs `
+    # Use a wrapper batch file to avoid PowerShell argument escaping issues
+    $ngrokBat = Join-Path $LOG_DIR "run-ngrok.bat"
+    $ngrokErrFile = Join-Path $LOG_DIR "ngrok-err.log"
+    "@echo off`nngrok http --domain=$NGROK_DOMAIN $MCP_PORT --log=stdout --log-format=logfmt" | Set-Content $ngrokBat -Encoding ASCII
+    $script:ngrokProcess = Start-Process -FilePath "cmd.exe" `
+        -ArgumentList "/c", $ngrokBat `
         -PassThru -WindowStyle Hidden `
         -RedirectStandardOutput $ngrokLogFile `
-        -RedirectStandardError (Join-Path $LOG_DIR "ngrok-err.log")
+        -RedirectStandardError $ngrokErrFile
 } catch {
     Abort "Failed to start ngrok: $($_.Exception.Message)"
 }
@@ -561,9 +564,10 @@ try {
 
             # Try to restart
             try {
-                $ngrokArgs = "--log=stdout --log-format=logfmt http --domain=$NGROK_DOMAIN $MCP_PORT"
-                $script:ngrokProcess = Start-Process -FilePath "ngrok" `
-                    -ArgumentList $ngrokArgs `
+                $ngrokBat = Join-Path $LOG_DIR "run-ngrok.bat"
+                "@echo off`nngrok http --domain=$NGROK_DOMAIN $MCP_PORT --log=stdout --log-format=logfmt" | Set-Content $ngrokBat -Encoding ASCII
+                $script:ngrokProcess = Start-Process -FilePath "cmd.exe" `
+                    -ArgumentList "/c", $ngrokBat `
                     -PassThru -WindowStyle Hidden `
                     -RedirectStandardOutput (Join-Path $LOG_DIR "ngrok.log") `
                     -RedirectStandardError (Join-Path $LOG_DIR "ngrok-err.log")

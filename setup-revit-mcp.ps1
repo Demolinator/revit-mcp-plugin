@@ -471,9 +471,10 @@ if (-not $ngrokDomain) {
 # Quick validation: try to use the domain (start+stop ngrok)
 Write-Info "Validating domain ownership..."
 try {
-    $ngrokTestArgs = "--log=stdout http --domain=$ngrokDomain 8000"
-    $testProc = Start-Process -FilePath "ngrok" `
-        -ArgumentList $ngrokTestArgs `
+    $ngrokTestBat = Join-Path $env:TEMP "ngrok-test.bat"
+    "@echo off`nngrok http --domain=$ngrokDomain 8000 --log=stdout" | Set-Content $ngrokTestBat -Encoding ASCII
+    $testProc = Start-Process -FilePath "cmd.exe" `
+        -ArgumentList "/c", $ngrokTestBat `
         -PassThru -WindowStyle Hidden `
         -RedirectStandardOutput (Join-Path $env:TEMP "ngrok-test.log") `
         -RedirectStandardError (Join-Path $env:TEMP "ngrok-test-err.log")
