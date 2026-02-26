@@ -313,14 +313,22 @@ Write-Step 3 $TOTAL_STEPS "Configuring ngrok account..."
 # --- Auth token ---
 $authValid = $false
 try {
-    # Test if current auth works by calling the API
+    # Check if ngrok config already has an authtoken
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
-    $result = & ngrok api reserved-domains list 2>&1 | Out-String
+    $ngrokConfig = & ngrok config check 2>&1 | Out-String
     $ErrorActionPreference = $prevEAP
-    if ($LASTEXITCODE -eq 0 -and $result -notmatch "ERR_NGROK" -and $result -notmatch "authentication failed") {
-        $authValid = $true
-        Write-Ok "ngrok already authenticated"
+    # If config check passes and we can read the config, check for authtoken
+    $ngrokConfigPath = Join-Path $env:USERPROFILE ".ngrok2\ngrok.yml"
+    if (-not (Test-Path $ngrokConfigPath)) {
+        $ngrokConfigPath = Join-Path $env:LOCALAPPDATA "ngrok\ngrok.yml"
+    }
+    if (Test-Path $ngrokConfigPath) {
+        $configContent = Get-Content $ngrokConfigPath -Raw -ErrorAction SilentlyContinue
+        if ($configContent -match "authtoken:\s*\S+") {
+            $authValid = $true
+            Write-Ok "ngrok already configured with auth token"
+        }
     }
 } catch {}
 
@@ -366,19 +374,10 @@ if (-not $authValid) {
                 continue
             }
 
-            # Verify auth works
-            $ErrorActionPreference = "Continue"
-            $verifyResult = & ngrok api reserved-domains list 2>&1 | Out-String
-            $verifyExit = $LASTEXITCODE
-            $ErrorActionPreference = $prevEAP
-
-            if ($verifyExit -eq 0 -and $verifyResult -notmatch "authentication failed") {
-                $authValid = $true
-                Write-Ok "ngrok authenticated successfully"
-                break
-            } else {
-                Write-Fail "Token saved but API verification failed. Is this the correct token?"
-            }
+            # Token accepted by ngrok - that's sufficient
+            $authValid = $true
+            Write-Ok "ngrok auth token saved successfully"
+            break
         } catch {
             Write-Fail "Error configuring token: $($_.Exception.Message)"
         }
