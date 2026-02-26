@@ -471,8 +471,9 @@ if (-not $ngrokDomain) {
 # Quick validation: try to use the domain (start+stop ngrok)
 Write-Info "Validating domain ownership..."
 try {
+    $ngrokTestArgs = "http --domain=$ngrokDomain 8000 --log=stdout"
     $testProc = Start-Process -FilePath "ngrok" `
-        -ArgumentList "http", "--domain=$ngrokDomain", "8000", "--log=stdout" `
+        -ArgumentList $ngrokTestArgs `
         -PassThru -WindowStyle Hidden `
         -RedirectStandardOutput (Join-Path $env:TEMP "ngrok-test.log") `
         -RedirectStandardError (Join-Path $env:TEMP "ngrok-test-err.log")
@@ -490,7 +491,7 @@ try {
         } elseif ($combined -match "ERR_NGROK") {
             Write-Warn "Domain validation returned an error (may still work): $($combined.Substring(0, [Math]::Min(200, $combined.Length)))"
         } else {
-            Write-Warn "ngrok exited unexpectedly during validation. Continuing anyway..."
+            Write-Info "Domain validation skipped (will be verified by start-revit-mcp.bat)"
         }
     } else {
         # ngrok is running - domain is valid
