@@ -205,8 +205,12 @@ if (Test-CommandExists "uv") {
 Write-Info "Checking Python..."
 $pyFound = $false
 try {
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
     $pyPath = (& uv python find 2>&1) | Out-String
-    if ($LASTEXITCODE -eq 0 -and $pyPath.Trim().Length -gt 0) {
+    $pyExit = $LASTEXITCODE
+    $ErrorActionPreference = $prevEAP
+    if ($pyExit -eq 0 -and $pyPath.Trim().Length -gt 0) {
         $pyFound = $true
     }
 } catch {}
@@ -214,8 +218,12 @@ try {
 if (-not $pyFound) {
     Write-Info "No Python found. Installing via uv (no system Python needed)..."
     try {
+        $prevEAP = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
         & uv python install 2>&1 | Out-Null
-        if ($LASTEXITCODE -eq 0) {
+        $uvPyExit = $LASTEXITCODE
+        $ErrorActionPreference = $prevEAP
+        if ($uvPyExit -eq 0) {
             Write-Ok "Python installed via uv"
         } else {
             Write-Warn "uv python install returned an error, but uv sync may still work"
@@ -519,7 +527,10 @@ if (-not (Test-Path (Join-Path $SERVER_DIR "main.py"))) {
         try {
             $tempClone = Join-Path $env:TEMP "revit-mcp-clone-$(Get-Random)"
             Write-Info "Downloading via git clone..."
+            $prevEAP = $ErrorActionPreference
+            $ErrorActionPreference = "Continue"
             & git clone --depth 1 $MCP_REPO_URL $tempClone 2>&1 | Out-Null
+            $ErrorActionPreference = $prevEAP
 
             if ($LASTEXITCODE -eq 0 -and (Test-Path (Join-Path $tempClone "main.py"))) {
                 Move-Item -Force $tempClone $SERVER_DIR
@@ -573,9 +584,13 @@ if (-not (Test-Path (Join-Path $SERVER_DIR "main.py"))) {
 
 try {
     Push-Location $SERVER_DIR
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
     $syncOut = & uv sync 2>&1 | Out-String
+    $syncExit = $LASTEXITCODE
+    $ErrorActionPreference = $prevEAP
 
-    if ($LASTEXITCODE -ne 0) {
+    if ($syncExit -ne 0) {
         Pop-Location -ErrorAction SilentlyContinue
         Write-Fail "uv sync failed:"
         Write-Info $syncOut
