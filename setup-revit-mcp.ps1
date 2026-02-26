@@ -314,7 +314,10 @@ Write-Step 3 $TOTAL_STEPS "Configuring ngrok account..."
 $authValid = $false
 try {
     # Test if current auth works by calling the API
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
     $result = & ngrok api reserved-domains list 2>&1 | Out-String
+    $ErrorActionPreference = $prevEAP
     if ($LASTEXITCODE -eq 0 -and $result -notmatch "ERR_NGROK" -and $result -notmatch "authentication failed") {
         $authValid = $true
         Write-Ok "ngrok already authenticated"
@@ -352,15 +355,24 @@ if (-not $authValid) {
         }
 
         try {
+            $prevEAP = $ErrorActionPreference
+            $ErrorActionPreference = "Continue"
             $addResult = & ngrok config add-authtoken $token 2>&1 | Out-String
-            if ($LASTEXITCODE -ne 0) {
+            $addExit = $LASTEXITCODE
+            $ErrorActionPreference = $prevEAP
+
+            if ($addExit -ne 0) {
                 Write-Fail "ngrok rejected the token: $addResult"
                 continue
             }
 
             # Verify auth works
+            $ErrorActionPreference = "Continue"
             $verifyResult = & ngrok api reserved-domains list 2>&1 | Out-String
-            if ($LASTEXITCODE -eq 0 -and $verifyResult -notmatch "authentication failed") {
+            $verifyExit = $LASTEXITCODE
+            $ErrorActionPreference = $prevEAP
+
+            if ($verifyExit -eq 0 -and $verifyResult -notmatch "authentication failed") {
                 $authValid = $true
                 Write-Ok "ngrok authenticated successfully"
                 break
@@ -384,7 +396,10 @@ $ngrokDomain = $null
 
 # Check for existing domain
 try {
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
     $domainJson = & ngrok api reserved-domains list 2>&1 | Out-String
+    $ErrorActionPreference = $prevEAP
     if ($LASTEXITCODE -eq 0) {
         $domainData = $domainJson | ConvertFrom-Json
         if ($domainData.reserved_domains -and $domainData.reserved_domains.Count -gt 0) {
