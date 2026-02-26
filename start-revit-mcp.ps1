@@ -1,5 +1,5 @@
 # ============================================================
-# Revit MCP — Per-Session Startup for Claude Cowork
+# Revit MCP - Per-Session Startup for Claude Cowork
 # ============================================================
 # Double-click start-revit-mcp.bat (or run this) before each
 # Cowork session. It starts the MCP server + ngrok tunnel.
@@ -12,7 +12,7 @@
 
 $ErrorActionPreference = "Stop"
 
-# Force TLS 1.2 — PowerShell 5.1 defaults to TLS 1.0 which GitHub/ngrok reject
+# Force TLS 1.2 - PowerShell 5.1 defaults to TLS 1.0 which GitHub/ngrok reject
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # ============================================================
@@ -33,7 +33,7 @@ $script:ngrokProcess = $null
 function Write-Banner {
     Write-Host ""
     Write-Host "  ============================================================" -ForegroundColor Cyan
-    Write-Host "      Revit MCP — Starting Session" -ForegroundColor White
+    Write-Host "      Revit MCP - Starting Session" -ForegroundColor White
     Write-Host "  ============================================================" -ForegroundColor Cyan
     Write-Host ""
 }
@@ -297,7 +297,7 @@ if (Test-TcpPort "127.0.0.1" $MCP_PORT) {
                     Abort "Could not stop process $existingPid : $($_.Exception.Message)"
                 }
             } else {
-                Abort "Cannot start — port $MCP_PORT is in use by $existingName (PID $existingPid)"
+                Abort "Cannot start - port $MCP_PORT is in use by $existingName (PID $existingPid)"
             }
         } else {
             Abort "Port $MCP_PORT is in use by $existingName (PID $existingPid). Stop that process and try again."
@@ -476,7 +476,7 @@ if ($revitReady -and $e2eOk) {
             -Method POST -Headers $headers -Body $body -TimeoutSec 15
 
         if ($toolResp.result.content[0].text -match "healthy") {
-            Write-Ok "Revit tool test PASSED — full pipeline working!"
+            Write-Ok "Revit tool test PASSED - full pipeline working!"
         } else {
             Write-Warn "Revit tool returned unexpected response"
         }
@@ -502,7 +502,7 @@ Write-Host "  ============================================================" -For
 Write-Host ""
 
 # ============================================================
-# Monitor loop — keep alive until Ctrl+C
+# Monitor loop - keep alive until Ctrl+C
 # ============================================================
 $healthCheckInterval = 30  # seconds
 $lastHealthCheck = [DateTime]::Now
@@ -592,7 +592,7 @@ try {
 
             # Quick port check
             if (-not (Test-TcpPort "127.0.0.1" $MCP_PORT)) {
-                Write-Warn "MCP server not responding on port $MCP_PORT — may need restart"
+                Write-Warn "MCP server not responding on port $MCP_PORT - may need restart"
             }
         }
     }

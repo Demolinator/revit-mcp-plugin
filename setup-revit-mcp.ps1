@@ -1,5 +1,5 @@
 # ============================================================
-# Revit MCP — One-Time Setup for Claude Cowork
+# Revit MCP - One-Time Setup for Claude Cowork
 # ============================================================
 # Run this ONCE to install dependencies, configure ngrok,
 # and generate the Cowork plugin with a permanent URL.
@@ -12,7 +12,7 @@
 
 $ErrorActionPreference = "Stop"
 
-# Force TLS 1.2 — PowerShell 5.1 defaults to TLS 1.0 which GitHub/ngrok reject
+# Force TLS 1.2 - PowerShell 5.1 defaults to TLS 1.0 which GitHub/ngrok reject
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # ============================================================
@@ -33,7 +33,7 @@ $TOOLS_DIR      = Join-Path $SCRIPT_DIR ".tools"
 function Write-Banner {
     Write-Host ""
     Write-Host "  ============================================================" -ForegroundColor Cyan
-    Write-Host "      Revit MCP — One-Time Setup for Claude Cowork" -ForegroundColor White
+    Write-Host "      Revit MCP - One-Time Setup for Claude Cowork" -ForegroundColor White
     Write-Host "  ============================================================" -ForegroundColor Cyan
     Write-Host ""
 }
@@ -201,7 +201,7 @@ if (Test-CommandExists "uv") {
     }
 }
 
-# Ensure Python is available (uv manages its own Python — no system Python needed)
+# Ensure Python is available (uv manages its own Python - no system Python needed)
 Write-Info "Checking Python..."
 $pyFound = $false
 try {
@@ -326,7 +326,7 @@ if (-not $authValid) {
     Write-Host "      You need a free ngrok account." -ForegroundColor White
     Write-Host "      1. Go to: " -NoNewline -ForegroundColor White
     Write-Host "https://dashboard.ngrok.com/signup" -ForegroundColor Cyan
-    Write-Host "      2. Sign up (free — no credit card)" -ForegroundColor White
+    Write-Host "      2. Sign up (free - no credit card)" -ForegroundColor White
     Write-Host "      3. Go to: " -NoNewline -ForegroundColor White
     Write-Host "https://dashboard.ngrok.com/get-started/your-authtoken" -ForegroundColor Cyan
     Write-Host "      4. Copy your auth token" -ForegroundColor White
@@ -405,7 +405,7 @@ if (-not $ngrokDomain) {
     Write-Host "      You get 1 free permanent domain from ngrok." -ForegroundColor White
     Write-Host "      1. Go to: " -NoNewline -ForegroundColor White
     Write-Host "https://dashboard.ngrok.com/domains" -ForegroundColor Cyan
-    Write-Host "      2. Click 'New Domain' (free — you get 1)" -ForegroundColor White
+    Write-Host "      2. Click 'New Domain' (free - you get 1)" -ForegroundColor White
     Write-Host "      3. Copy the domain name" -ForegroundColor White
     Write-Host "         (looks like: " -NoNewline -ForegroundColor White
     Write-Host "something-random.ngrok-free.app" -ForegroundColor Yellow -NoNewline
@@ -471,7 +471,7 @@ try {
             Write-Warn "ngrok exited unexpectedly during validation. Continuing anyway..."
         }
     } else {
-        # ngrok is running — domain is valid
+        # ngrok is running - domain is valid
         Stop-Process -Id $testProc.Id -Force -ErrorAction SilentlyContinue
         Write-Ok "Domain validated: https://$ngrokDomain"
     }
