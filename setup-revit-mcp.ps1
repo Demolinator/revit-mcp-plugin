@@ -12,6 +12,9 @@
 
 $ErrorActionPreference = "Stop"
 
+# Force TLS 1.2 — PowerShell 5.1 defaults to TLS 1.0 which GitHub/ngrok reject
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 # ============================================================
 # Constants
 # ============================================================
@@ -462,6 +465,12 @@ Write-Step 4 $TOTAL_STEPS "Installing MCP server dependencies..."
 
 if (-not (Test-Path (Join-Path $SERVER_DIR "main.py"))) {
     Write-Info "MCP server not found locally. Downloading..."
+
+    # Clean up any partial download from a previous failed attempt
+    if (Test-Path $SERVER_DIR) {
+        Write-Info "Removing incomplete previous download..."
+        Remove-Item $SERVER_DIR -Recurse -Force -ErrorAction SilentlyContinue
+    }
 
     $downloaded = $false
 

@@ -12,6 +12,9 @@
 
 $ErrorActionPreference = "Stop"
 
+# Force TLS 1.2 — PowerShell 5.1 defaults to TLS 1.0 which GitHub/ngrok reject
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 # ============================================================
 # Constants
 # ============================================================
