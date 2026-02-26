@@ -23,6 +23,21 @@ You speak naturally. Claude translates your intent into precise Revit operations
 | pyRevit | Runs the HTTP routes inside Revit (port 48884) |
 | Internet connection | For ngrok tunnel and MCP server download |
 
+### Step 0: Install pyRevit (if not already installed)
+
+pyRevit is a free add-in that lets scripts run inside Revit. The MCP server needs it to talk to Revit.
+
+1. Go to https://github.com/pyrevitlabs/pyRevit/releases
+2. Download the latest **.exe installer** (e.g. `pyRevit_CLI_x.x.x.x_admin_signed.exe`)
+3. Run the installer — accept defaults, click **Next** through each screen
+4. Open (or restart) Revit — you should see a **pyRevit** tab in the ribbon at the top
+5. In the pyRevit tab, click **Settings** (gear icon)
+6. In the Settings window, go to the **Routes** section on the left
+7. Check the box to **Enable Routes Server**
+8. Click **Save Settings** and let pyRevit reload
+
+To verify it worked, open a browser and go to `http://localhost:48884/` — you should see a response (not a "connection refused" error).
+
 ### Step 1: Download this repo
 
 **Option A** — If you have Git:

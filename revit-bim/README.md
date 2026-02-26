@@ -14,15 +14,16 @@ Architects, structural engineers, and MEP engineers describe what they want in p
 | `/revit-bim:modify-model` | Modify, delete, or update elements |
 | `/revit-bim:analyze-model` | Analyze model statistics, rooms, materials |
 
-## MCP Tools (31)
+## MCP Tools (45)
 
 | Category | Tools |
 |----------|-------|
-| **Create** (8) | `create_level`, `create_line_based_element`, `create_surface_based_element`, `place_family`, `create_grid`, `create_structural_framing`, `create_sheet`, `create_schedule` |
-| **Query** (11) | `get_revit_status`, `get_revit_model_info`, `list_levels`, `list_families`, `list_family_categories`, `get_revit_view`, `list_revit_views`, `get_current_view_info`, `get_current_view_elements`, `get_selected_elements`, `list_category_parameters` |
-| **Modify** (5) | `delete_elements`, `modify_element`, `color_splash`, `clear_colors`, `tag_walls` |
+| **Create** (15) | `create_level`, `create_line_based_element`, `create_surface_based_element`, `place_family`, `create_grid`, `create_structural_framing`, `create_sheet`, `create_schedule`, `create_room`, `create_room_separation`, `create_duct`, `create_pipe`, `create_mep_system`, `create_detail_line`, `create_view` |
+| **Query** (12) | `get_revit_status`, `get_revit_model_info`, `list_levels`, `list_families`, `list_family_categories`, `get_revit_view`, `list_revit_views`, `get_current_view_info`, `get_current_view_elements`, `get_selected_elements`, `list_category_parameters`, `get_element_properties` |
+| **Modify** (9) | `delete_elements`, `modify_element`, `color_splash`, `clear_colors`, `tag_walls`, `set_parameter`, `tag_elements`, `transform_elements`, `set_active_view` |
 | **Analyze** (4) | `ai_element_filter`, `export_room_data`, `get_material_quantities`, `analyze_model_statistics` |
-| **Document** (3) | `create_dimensions`, `export_document`, `tag_walls` |
+| **Document** (2) | `create_dimensions`, `export_document` |
+| **Interop** (2) | `export_ifc`, `link_file` |
 | **Advanced** (1) | `execute_revit_code` |
 
 ## Building Design Sequence
@@ -53,5 +54,5 @@ All tools accept **millimeters (mm)**. The server converts to Revit's internal f
 ## Requirements
 
 - Autodesk Revit 2024, 2025, or 2026
-- pyRevit installed and loaded
+- pyRevit installed and loaded with Routes enabled (see main README for install steps)
 - Windows 10/11
