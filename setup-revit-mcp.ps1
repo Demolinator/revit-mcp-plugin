@@ -387,27 +387,27 @@ if (-not $ngrokDomain) {
     Start-Sleep -Seconds 1
 
     for ($attempt = 1; $attempt -le 3; $attempt++) {
-        $input = Read-Host "  Paste your ngrok static domain (attempt $attempt/3)"
-        $input = $input.Trim()
+        $domainInput = Read-Host "  Paste your ngrok static domain (attempt $attempt/3)"
+        $domainInput = $domainInput.Trim()
 
-        if ([string]::IsNullOrWhiteSpace($input)) {
+        if ([string]::IsNullOrWhiteSpace($domainInput)) {
             Write-Fail "Domain cannot be empty"
             continue
         }
 
         # Clean up common mistakes
-        $input = $input -replace "^https?://", ""    # Remove protocol prefix
-        $input = $input -replace "/.*$", ""           # Remove path suffix
-        $input = $input.ToLower()
+        $domainInput = $domainInput -replace "^https?://", ""    # Remove protocol prefix
+        $domainInput = $domainInput -replace "/.*$", ""           # Remove path suffix
+        $domainInput = $domainInput.ToLower()
 
         # Validate format
-        if ($input -match "^[a-z0-9][a-z0-9\-]*\.(ngrok-free\.app|ngrok\.app|ngrok\.io)$") {
-            $ngrokDomain = $input
+        if ($domainInput -match "^[a-z0-9][a-z0-9\-]*\.(ngrok-free\.app|ngrok\.app|ngrok\.io)$") {
+            $ngrokDomain = $domainInput
             Write-Ok "Domain set: $ngrokDomain"
             break
         } else {
             Write-Fail "Invalid format. Expected: something.ngrok-free.app"
-            Write-Info "You entered: $input"
+            Write-Info "You entered: $domainInput"
             Write-Info "Get your domain at: https://dashboard.ngrok.com/domains"
         }
     }
@@ -576,7 +576,7 @@ if (-not $revitOk) {
 # ============================================================
 Write-Step 6 $TOTAL_STEPS "Generating Cowork plugin with permanent URL..."
 
-if (-not (Test-Path (Join-Path $PLUGIN_DIR ".claude-plugin" "plugin.json"))) {
+if (-not (Test-Path (Join-Path (Join-Path $PLUGIN_DIR ".claude-plugin") "plugin.json"))) {
     Abort "Plugin template not found at: $PLUGIN_DIR"
 }
 
