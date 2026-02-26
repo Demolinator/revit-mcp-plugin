@@ -422,7 +422,7 @@ if (-not $ngrokDomain) {
     Write-Host "      2. Click 'New Domain' (free - you get 1)" -ForegroundColor White
     Write-Host "      3. Copy the domain name" -ForegroundColor White
     Write-Host "         (looks like: " -NoNewline -ForegroundColor White
-    Write-Host "something-random.ngrok-free.app" -ForegroundColor Yellow -NoNewline
+    Write-Host "something-random.ngrok-free.app (or .dev)" -ForegroundColor Yellow -NoNewline
     Write-Host ")" -ForegroundColor White
     Write-Host ""
 
@@ -444,12 +444,12 @@ if (-not $ngrokDomain) {
         $domainInput = $domainInput.ToLower()
 
         # Validate format
-        if ($domainInput -match "^[a-z0-9][a-z0-9\-]*\.(ngrok-free\.app|ngrok\.app|ngrok\.io)$") {
+        if ($domainInput -match "^[a-z0-9][a-z0-9\-]*\.(ngrok-free\.app|ngrok-free\.dev|ngrok\.app|ngrok\.dev|ngrok\.io)$") {
             $ngrokDomain = $domainInput
             Write-Ok "Domain set: $ngrokDomain"
             break
         } else {
-            Write-Fail "Invalid format. Expected: something.ngrok-free.app"
+            Write-Fail "Invalid format. Expected: something.ngrok-free.app (or .dev)"
             Write-Info "You entered: $domainInput"
             Write-Info "Get your domain at: https://dashboard.ngrok.com/domains"
         }
