@@ -482,8 +482,7 @@ if (-not (Test-Path (Join-Path $SERVER_DIR "main.py"))) {
             & git clone --depth 1 $MCP_REPO_URL $tempClone 2>&1 | Out-Null
 
             if ($LASTEXITCODE -eq 0 -and (Test-Path (Join-Path $tempClone "main.py"))) {
-                Copy-Item -Recurse -Force $tempClone $SERVER_DIR
-                Remove-Item -Recurse -Force $tempClone -ErrorAction SilentlyContinue
+                Move-Item -Force $tempClone $SERVER_DIR
                 Write-Ok "MCP server downloaded via git"
                 $downloaded = $true
             } else {
@@ -513,7 +512,7 @@ if (-not (Test-Path (Join-Path $SERVER_DIR "main.py"))) {
             # GitHub ZIPs extract to a subfolder named repo-branch
             $extractedDir = Get-ChildItem -Path $tempExtract -Directory | Select-Object -First 1
             if ($extractedDir -and (Test-Path (Join-Path $extractedDir.FullName "main.py"))) {
-                Copy-Item -Recurse -Force $extractedDir.FullName $SERVER_DIR
+                Move-Item -Force $extractedDir.FullName $SERVER_DIR
                 Write-Ok "MCP server downloaded via ZIP"
                 $downloaded = $true
             } else {
@@ -610,7 +609,8 @@ try {
             }
         }
     }
-    $mcpConfig | ConvertTo-Json -Depth 4 | Set-Content (Join-Path $tempDir ".mcp.json") -Encoding UTF8
+    $mcpJson = $mcpConfig | ConvertTo-Json -Depth 4
+    [System.IO.File]::WriteAllText((Join-Path $tempDir ".mcp.json"), $mcpJson, (New-Object System.Text.UTF8Encoding $false))
 
     # Update CONNECTORS.md
     $connectorsContent = @"
@@ -645,7 +645,7 @@ Claude Cowork --> https://$ngrokDomain/mcp --> ngrok tunnel --> MCP Server (loca
 | "Connection refused on 48884" | pyRevit not loaded | Check pyRevit tab in Revit |
 | Tools return errors | Invalid type names | Call ``list_families`` first |
 "@
-    $connectorsContent | Set-Content (Join-Path $tempDir "CONNECTORS.md") -Encoding UTF8
+    [System.IO.File]::WriteAllText((Join-Path $tempDir "CONNECTORS.md"), $connectorsContent, (New-Object System.Text.UTF8Encoding $false))
 
     # Create ZIP
     $zipPath = Join-Path $DIST_DIR "revit-architect-plugin.zip"
@@ -682,7 +682,8 @@ $config = @{
     setup_date     = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
     setup_version  = "1.1.0"
 }
-$config | ConvertTo-Json -Depth 3 | Set-Content $CONFIG_FILE -Encoding UTF8
+$configJson = $config | ConvertTo-Json -Depth 3
+[System.IO.File]::WriteAllText($CONFIG_FILE, $configJson, (New-Object System.Text.UTF8Encoding $false))
 Write-Ok "Configuration saved"
 
 # ============================================================
