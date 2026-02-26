@@ -201,6 +201,32 @@ if (Test-CommandExists "uv") {
     }
 }
 
+# Ensure Python is available (uv manages its own Python — no system Python needed)
+Write-Info "Checking Python..."
+$pyFound = $false
+try {
+    $pyPath = (& uv python find 2>&1) | Out-String
+    if ($LASTEXITCODE -eq 0 -and $pyPath.Trim().Length -gt 0) {
+        $pyFound = $true
+    }
+} catch {}
+
+if (-not $pyFound) {
+    Write-Info "No Python found. Installing via uv (no system Python needed)..."
+    try {
+        & uv python install 2>&1 | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Ok "Python installed via uv"
+        } else {
+            Write-Warn "uv python install returned an error, but uv sync may still work"
+        }
+    } catch {
+        Write-Warn "Could not pre-install Python: $($_.Exception.Message)"
+    }
+} else {
+    Write-Ok "Python available"
+}
+
 # ============================================================
 # STEP 2: Install ngrok
 # ============================================================
