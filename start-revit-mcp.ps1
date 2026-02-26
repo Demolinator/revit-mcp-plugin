@@ -375,7 +375,7 @@ $ngrokLogFile = Join-Path $LOG_DIR "ngrok.log"
 "" | Set-Content $ngrokLogFile -ErrorAction SilentlyContinue
 
 try {
-    $ngrokArgs = "http --domain=$NGROK_DOMAIN $MCP_PORT --log=stdout --log-format=logfmt"
+    $ngrokArgs = "--log=stdout --log-format=logfmt http --domain=$NGROK_DOMAIN $MCP_PORT"
     $script:ngrokProcess = Start-Process -FilePath "ngrok" `
         -ArgumentList $ngrokArgs `
         -PassThru -WindowStyle Hidden `
@@ -561,7 +561,7 @@ try {
 
             # Try to restart
             try {
-                $ngrokArgs = "http --domain=$NGROK_DOMAIN $MCP_PORT --log=stdout --log-format=logfmt"
+                $ngrokArgs = "--log=stdout --log-format=logfmt http --domain=$NGROK_DOMAIN $MCP_PORT"
                 $script:ngrokProcess = Start-Process -FilePath "ngrok" `
                     -ArgumentList $ngrokArgs `
                     -PassThru -WindowStyle Hidden `
