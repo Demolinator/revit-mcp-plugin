@@ -375,12 +375,13 @@ $ngrokLogFile = Join-Path $LOG_DIR "ngrok.log"
 "" | Set-Content $ngrokLogFile -ErrorAction SilentlyContinue
 
 try {
-    # Use a wrapper batch file to avoid PowerShell argument escaping issues
-    $ngrokBat = Join-Path $LOG_DIR "run-ngrok.bat"
     $ngrokErrFile = Join-Path $LOG_DIR "ngrok-err.log"
-    "@echo off`nngrok http $MCP_PORT --domain $NGROK_DOMAIN" | Set-Content $ngrokBat -Encoding ASCII
+    $ngrokBat = Join-Path $LOG_DIR "run-ngrok.bat"
+    $batContent = "@echo off`r`nngrok http $MCP_PORT --domain $NGROK_DOMAIN"
+    [System.IO.File]::WriteAllText($ngrokBat, $batContent, [System.Text.Encoding]::ASCII)
+    Write-Info "Debug: ngrok http $MCP_PORT --domain $NGROK_DOMAIN"
     $script:ngrokProcess = Start-Process -FilePath "cmd.exe" `
-        -ArgumentList "/c", $ngrokBat `
+        -ArgumentList "/c `"$ngrokBat`"" `
         -PassThru -WindowStyle Hidden `
         -RedirectStandardOutput $ngrokLogFile `
         -RedirectStandardError $ngrokErrFile
