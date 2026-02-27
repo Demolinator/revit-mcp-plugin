@@ -396,6 +396,24 @@ if (-not $authValid) {
     }
 }
 
+# Fix ngrok config version if needed (v3.3.x only supports version 1 or 2)
+$ngrokConfigPaths = @(
+    (Join-Path $env:LOCALAPPDATA "ngrok\ngrok.yml"),
+    (Join-Path $env:USERPROFILE ".ngrok2\ngrok.yml")
+)
+foreach ($cfgPath in $ngrokConfigPaths) {
+    if (Test-Path $cfgPath) {
+        $cfgContent = Get-Content $cfgPath -Raw -ErrorAction SilentlyContinue
+        if ($cfgContent -match 'version:\s*"?3"?') {
+            Write-Info "Fixing ngrok config version (3 -> 2) at $cfgPath"
+            $cfgContent = $cfgContent -replace 'version:\s*"?3"?', 'version: "2"'
+            [System.IO.File]::WriteAllText($cfgPath, $cfgContent)
+            Write-Ok "ngrok config version fixed"
+        }
+        break
+    }
+}
+
 # --- Static domain ---
 Write-Section "Static Domain"
 
