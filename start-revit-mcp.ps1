@@ -201,7 +201,7 @@ if (-not (Test-CommandExists "ngrok")) {
 }
 Write-Ok "ngrok found"
 
-# Fix ngrok config version if needed (v3.3.x only supports version 1 or 2)
+# Fix ngrok config if needed (v3.3.x only supports version 2 format)
 $ngrokConfigPaths = @(
     (Join-Path $env:LOCALAPPDATA "ngrok\ngrok.yml"),
     (Join-Path $env:USERPROFILE ".ngrok2\ngrok.yml")
@@ -209,11 +209,21 @@ $ngrokConfigPaths = @(
 foreach ($cfgPath in $ngrokConfigPaths) {
     if (Test-Path $cfgPath) {
         $cfgContent = Get-Content $cfgPath -Raw -ErrorAction SilentlyContinue
-        if ($cfgContent -match 'version:\s*"?3"?') {
-            Write-Info "Fixing ngrok config version (3 -> 2)..."
-            $cfgContent = $cfgContent -replace 'version:\s*"?3"?', 'version: "2"'
-            [System.IO.File]::WriteAllText($cfgPath, $cfgContent)
-            Write-Ok "ngrok config version fixed"
+        $needsFix = $false
+        if ($cfgContent -match 'version:\s*"?3"?' -or $cfgContent -match '(?m)^agent:') {
+            $needsFix = $true
+        }
+        if ($needsFix) {
+            Write-Info "Fixing ngrok config format..."
+            $extractedToken = $null
+            if ($cfgContent -match 'authtoken:\s*(\S+)') {
+                $extractedToken = $Matches[1]
+            }
+            if ($extractedToken) {
+                $newConfig = "version: `"2`"`nauthtoken: $extractedToken`n"
+                [System.IO.File]::WriteAllText($cfgPath, $newConfig)
+                Write-Ok "ngrok config fixed (converted to v2 format)"
+            }
         }
         break
     }
