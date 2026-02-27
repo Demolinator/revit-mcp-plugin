@@ -378,7 +378,7 @@ try {
     # Use a wrapper batch file to avoid PowerShell argument escaping issues
     $ngrokBat = Join-Path $LOG_DIR "run-ngrok.bat"
     $ngrokErrFile = Join-Path $LOG_DIR "ngrok-err.log"
-    "@echo off`nngrok http --hostname $NGROK_DOMAIN $MCP_PORT --log stdout" | Set-Content $ngrokBat -Encoding ASCII
+    "@echo off`nngrok http --domain $NGROK_DOMAIN $MCP_PORT --log stdout" | Set-Content $ngrokBat -Encoding ASCII
     $script:ngrokProcess = Start-Process -FilePath "cmd.exe" `
         -ArgumentList "/c", $ngrokBat `
         -PassThru -WindowStyle Hidden `
@@ -565,7 +565,7 @@ try {
             # Try to restart
             try {
                 $ngrokBat = Join-Path $LOG_DIR "run-ngrok.bat"
-                "@echo off`nngrok http --hostname $NGROK_DOMAIN $MCP_PORT --log stdout" | Set-Content $ngrokBat -Encoding ASCII
+                "@echo off`nngrok http --domain $NGROK_DOMAIN $MCP_PORT --log stdout" | Set-Content $ngrokBat -Encoding ASCII
                 $script:ngrokProcess = Start-Process -FilePath "cmd.exe" `
                     -ArgumentList "/c", $ngrokBat `
                     -PassThru -WindowStyle Hidden `
