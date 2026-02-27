@@ -201,6 +201,24 @@ if (-not (Test-CommandExists "ngrok")) {
 }
 Write-Ok "ngrok found"
 
+# Fix ngrok config version if needed (v3.3.x only supports version 1 or 2)
+$ngrokConfigPaths = @(
+    (Join-Path $env:LOCALAPPDATA "ngrok\ngrok.yml"),
+    (Join-Path $env:USERPROFILE ".ngrok2\ngrok.yml")
+)
+foreach ($cfgPath in $ngrokConfigPaths) {
+    if (Test-Path $cfgPath) {
+        $cfgContent = Get-Content $cfgPath -Raw -ErrorAction SilentlyContinue
+        if ($cfgContent -match 'version:\s*"?3"?') {
+            Write-Info "Fixing ngrok config version (3 -> 2)..."
+            $cfgContent = $cfgContent -replace 'version:\s*"?3"?', 'version: "2"'
+            [System.IO.File]::WriteAllText($cfgPath, $cfgContent)
+            Write-Ok "ngrok config version fixed"
+        }
+        break
+    }
+}
+
 # Check MCP server directory
 if (-not (Test-Path (Join-Path $SERVER_DIR "main.py"))) {
     Abort "MCP server not found at: $SERVER_DIR`n      Has the installation been moved or deleted?"
