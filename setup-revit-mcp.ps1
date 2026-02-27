@@ -472,7 +472,7 @@ if (-not $ngrokDomain) {
 Write-Info "Validating domain ownership..."
 try {
     $ngrokTestBat = Join-Path $env:TEMP "ngrok-test.bat"
-    "@echo off`nngrok http --domain $ngrokDomain 8000" | Set-Content $ngrokTestBat -Encoding ASCII
+    "@echo off`nngrok http 8000 --domain $ngrokDomain" | Set-Content $ngrokTestBat -Encoding ASCII
     $testProc = Start-Process -FilePath "cmd.exe" `
         -ArgumentList "/c", $ngrokTestBat `
         -PassThru -WindowStyle Hidden `
