@@ -87,7 +87,9 @@ The setup script automatically handles everything:
 1. Open Revit (2024, 2025, or 2026) with a project file
 2. Double-click **`start-revit-mcp.bat`**
 3. Wait for the "READY!" message
-4. Open Cowork — your plugin is connected and ready to use
+4. **Keep the terminal window open** (minimize it) — it runs the MCP server and tunnel. Closing it disconnects Cowork from Revit.
+5. Open Cowork — your plugin is connected and ready to use
+6. When done, press **Ctrl+C** in the terminal to shut down cleanly
 
 ### Troubleshooting
 
@@ -98,6 +100,8 @@ The setup script automatically handles everything:
 | "Could not install uv" | Firewall blocking downloads | Try connecting to a different network, or install uv manually from https://docs.astral.sh/uv/ |
 | "Domain is not bound to your account" | Wrong ngrok domain pasted | Go to https://dashboard.ngrok.com/domains and copy your domain again |
 | ngrok session limit reached | Another tunnel is running | Close other ngrok sessions at https://dashboard.ngrok.com/tunnels |
+| "ngrok version too old" | ngrok < 3.20.0 | Run `ngrok update` in a terminal, or download latest from https://ngrok.com/download |
+| ngrok shows help text instead of starting | Invalid ngrok config file | Run `ngrok config check` — if it shows errors, delete the config and re-run setup |
 | Tools return errors in Cowork | Invalid family type names | Ask Claude to call `list_families` or `list_family_categories` first |
 
 ## Quick Setup (Claude Code CLI)
