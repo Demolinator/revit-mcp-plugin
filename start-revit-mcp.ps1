@@ -199,9 +199,31 @@ Write-Ok "uv found"
 if (-not (Test-CommandExists "ngrok")) {
     Abort "ngrok not found. Run setup-revit-mcp.bat to install it."
 }
-Write-Ok "ngrok found"
+# Check ngrok version
+$ngrokVer = (& ngrok version 2>&1) -join ""
+if ($ngrokVer -match "(\d+)\.(\d+)\.(\d+)") {
+    $ngMajor = [int]$Matches[1]; $ngMinor = [int]$Matches[2]
+    if ($ngMajor -lt 3 -or ($ngMajor -eq 3 -and $ngMinor -lt 20)) {
+        Write-Warn "ngrok $ngrokVer is too old (minimum: 3.20.0)"
+        Write-Info "Updating ngrok..."
+        $prevEAP = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        & ngrok update 2>&1 | Out-Null
+        $ErrorActionPreference = $prevEAP
+        $ngrokVer = (& ngrok version 2>&1) -join ""
+        if ($ngrokVer -match "(\d+)\.(\d+)\.(\d+)" -and ([int]$Matches[2] -ge 20 -or [int]$Matches[1] -gt 3)) {
+            Write-Ok "ngrok updated to $ngrokVer"
+        } else {
+            Abort "ngrok is too old ($ngrokVer). Run setup-revit-mcp.bat to update, or download from https://ngrok.com/download"
+        }
+    } else {
+        Write-Ok "ngrok found ($ngrokVer)"
+    }
+} else {
+    Write-Ok "ngrok found"
+}
 
-# Fix ngrok config if needed (v3.3.x only supports version 2 format)
+# Fix ngrok config if needed (older ngrok only supports version 2 format)
 $ngrokConfigPaths = @(
     (Join-Path $env:LOCALAPPDATA "ngrok\ngrok.yml"),
     (Join-Path $env:USERPROFILE ".ngrok2\ngrok.yml")

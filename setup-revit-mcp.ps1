@@ -240,10 +240,47 @@ if (-not $pyFound) {
 # ============================================================
 Write-Step 2 $TOTAL_STEPS "Checking ngrok (secure tunnel)..."
 
+$ngrokNeedsInstall = $false
+$ngrokNeedsUpdate = $false
 if (Test-CommandExists "ngrok") {
     $ngrokVer = (& ngrok version 2>&1) -join ""
-    Write-Ok "ngrok already installed ($ngrokVer)"
+    # Extract version number (e.g., "3.3.1" from "ngrok version 3.3.1")
+    if ($ngrokVer -match "(\d+)\.(\d+)\.(\d+)") {
+        $major = [int]$Matches[1]
+        $minor = [int]$Matches[2]
+        # ngrok requires minimum 3.20.0 for free accounts
+        if ($major -lt 3 -or ($major -eq 3 -and $minor -lt 20)) {
+            Write-Warn "ngrok version too old ($ngrokVer) - minimum required: 3.20.0"
+            Write-Info "Updating ngrok..."
+            $ngrokNeedsUpdate = $true
+            # Try ngrok's built-in update
+            $prevEAP = $ErrorActionPreference
+            $ErrorActionPreference = "Continue"
+            $updateOut = & ngrok update 2>&1 | Out-String
+            $updateExit = $LASTEXITCODE
+            $ErrorActionPreference = $prevEAP
+            if ($updateExit -eq 0 -and (Test-CommandExists "ngrok")) {
+                $ngrokVer = (& ngrok version 2>&1) -join ""
+                if ($ngrokVer -match "(\d+)\.(\d+)\.(\d+)" -and ([int]$Matches[2] -ge 20 -or [int]$Matches[1] -gt 3)) {
+                    Write-Ok "ngrok updated ($ngrokVer)"
+                    $ngrokNeedsUpdate = $false
+                }
+            }
+            if ($ngrokNeedsUpdate) {
+                Write-Info "Built-in update failed. Reinstalling..."
+                $ngrokNeedsInstall = $true
+            }
+        } else {
+            Write-Ok "ngrok already installed ($ngrokVer)"
+        }
+    } else {
+        Write-Ok "ngrok already installed ($ngrokVer)"
+    }
 } else {
+    $ngrokNeedsInstall = $true
+}
+
+if ($ngrokNeedsInstall) {
     Write-Warn "ngrok not found. Installing..."
 
     $installed = $false
