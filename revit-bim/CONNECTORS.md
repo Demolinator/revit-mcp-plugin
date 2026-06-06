@@ -2,7 +2,7 @@
 
 ## ~~revit
 
-The Revit MCP Server connects Claude to Autodesk Revit 2024/2025/2026/2027 via the Model Context Protocol. It provides 45 tools for building design, model editing, structural systems, MEP, documentation, and analysis.
+The Revit MCP Server connects Claude to Autodesk Revit 2024/2025/2026/2027 via the Model Context Protocol. It provides 46 tools for building design, model editing, structural systems, MEP, documentation, analysis, and clash detection.
 
 **Connection**: Uses a permanent ngrok tunnel. Run `start-revit-mcp.bat` on your machine before using Cowork.
 

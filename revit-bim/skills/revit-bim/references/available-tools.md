@@ -725,7 +725,7 @@ Switch the active view in Revit to the specified view. Use `list_revit_views` fi
 
 ---
 
-## ANALYZE Tools (4)
+## ANALYZE Tools (5)
 
 ### ai_element_filter
 
@@ -776,6 +776,36 @@ Get aggregated material quantities (areas and volumes) for cost estimation and t
 Get element counts grouped by category for model health checks and progress tracking.
 
 **Parameters:** None.
+
+---
+
+### check_clashes
+
+Detect hard clashes (geometric interferences) between elements using Revit's native interference logic — the core of BIM coordination (e.g. ducts through beams, pipes through walls). Returns clashing element pairs with ids, names, categories, and the approximate clash location in mm.
+
+**Scope rules:**
+- No categories given → a default physical scope (architectural + structural + MEP) is checked against itself.
+- Only `set_a_categories` given → checked against itself.
+- Both given → cross-discipline check (e.g. structure vs MEP).
+
+Categories accept BuiltInCategory ids (`"OST_DuctCurves"`) or friendly aliases (`"ducts"`, `"pipes"`, `"beams"`, `"walls"`, `"structural framing"`).
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `set_a_categories` | array[string] | No | First element set, e.g. `["beams", "OST_StructuralColumns"]` |
+| `set_b_categories` | array[string] | No | Second set to check against, e.g. `["ducts", "pipes"]` |
+| `max_clashes` | int | No | Max clashes to return (defaults to 200) |
+
+**Example — find structure vs MEP clashes:**
+```json
+{
+  "set_a_categories": ["structural framing", "structural columns"],
+  "set_b_categories": ["ducts", "pipes", "cable trays"]
+}
+```
+
+> Note: auto-joined concrete members and geometry-less elements (e.g. rebar) are not reported by Revit's interference logic.
 
 ---
 
@@ -889,8 +919,8 @@ Execute IronPython 2.7 code directly in Revit's context. Use as an escape hatch 
 | Create | 15 | create_level, create_line_based_element, create_surface_based_element, place_family, create_grid, create_structural_framing, create_sheet, create_schedule, create_room, create_room_separation, create_duct, create_pipe, create_mep_system, create_detail_line, create_view |
 | Query | 12 | get_revit_status, get_revit_model_info, list_levels, get_current_view_info, get_current_view_elements, list_revit_views, get_revit_view, list_families, list_family_categories, get_selected_elements, list_category_parameters, get_element_properties |
 | Modify | 8 | delete_elements, modify_element, color_splash, clear_colors, tag_walls, set_parameter, tag_elements, transform_elements, set_active_view |
-| Analyze | 4 | ai_element_filter, export_room_data, get_material_quantities, analyze_model_statistics |
+| Analyze | 5 | ai_element_filter, export_room_data, get_material_quantities, analyze_model_statistics, check_clashes |
 | Document | 3 | create_dimensions, export_document, create_schedule |
 | Interop | 2 | export_ifc, link_file |
 | Advanced | 1 | execute_revit_code |
-| **Total** | **45** | |
+| **Total** | **46** | |
