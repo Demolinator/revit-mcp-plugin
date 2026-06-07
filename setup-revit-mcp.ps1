@@ -699,7 +699,7 @@ if (-not $revitOk) {
     Write-Host ""
     Write-Host "      Revit is not required during setup." -ForegroundColor Gray
     Write-Host "      Make sure it's running before you use start-revit-mcp.bat" -ForegroundColor Gray
-    Write-Host "      Requirements: Revit (2024/2025/2026) open + pyRevit loaded + project open" -ForegroundColor Gray
+    Write-Host "      Requirements: Revit (2024/2025/2026/2027) open + pyRevit loaded + project open" -ForegroundColor Gray
     Write-Host ""
 }
 
@@ -742,7 +742,7 @@ try {
 
 ## ~~revit
 
-The Revit MCP Server connects Claude to Autodesk Revit 2024/2025/2026 via the Model Context Protocol. It provides 45 tools for building design, model editing, structural systems, MEP, documentation, and analysis.
+The Revit MCP Server connects Claude to Autodesk Revit 2024/2025/2026/2027 via the Model Context Protocol. It provides 48 tools for building design, model editing, structural systems, MEP, documentation, analysis, clash detection, and model persistence.
 
 **Connection**: Uses a permanent ngrok tunnel. Run ``start-revit-mcp.bat`` on your machine before using Cowork.
 
@@ -756,7 +756,7 @@ Claude Cowork --> https://$ngrokDomain/mcp --> ngrok tunnel --> MCP Server (loca
 
 ## Prerequisites
 
-- **Autodesk Revit 2024/2025/2026** installed and running with a project open
+- **Autodesk Revit 2024/2025/2026/2027** installed and running with a project open
 - **pyRevit** installed (provides Routes on port 48884)
 - **start-revit-mcp.bat** running (starts MCP server + tunnel)
 

@@ -1,8 +1,8 @@
 # Revit MCP Plugin
 
-Natural-language building design for Autodesk Revit 2024/2025/2026 via Claude.
+Natural-language building design for Autodesk Revit 2024/2025/2026/2027 via Claude.
 
-Describe buildings in plain English — Claude creates BIM elements in Revit automatically. 45 MCP tools for architects, structural engineers, and MEP engineers.
+Describe buildings in plain English — Claude creates BIM elements in Revit automatically. 48 MCP tools (including clash detection) for architects, structural engineers, and MEP engineers.
 
 ## How It Works
 
@@ -19,7 +19,7 @@ You speak naturally. Claude translates your intent into precise Revit operations
 | Requirement | Why |
 |-------------|-----|
 | Windows 10/11 | Revit is Windows-only |
-| Autodesk Revit 2024, 2025, or 2026 | The BIM application |
+| Autodesk Revit 2024, 2025, 2026, or 2027 | The BIM application |
 | Internet connection | For downloading tools and creating the tunnel |
 
 **You do NOT need** Python, Git, or any developer tools installed. The setup script installs everything automatically.
@@ -84,7 +84,7 @@ The setup script automatically handles everything:
 
 ### Step 4: Each session
 
-1. Open Revit (2024, 2025, or 2026) with a project file
+1. Open Revit (2024, 2025, 2026, or 2027) with a project file
 2. Double-click **`start-revit-mcp.bat`**
 3. Wait for the "READY!" message
 4. **Keep the terminal window open** (minimize it) — it runs the MCP server and tunnel. Closing it disconnects Cowork from Revit.
@@ -192,7 +192,8 @@ revit-mcp-plugin/
 
 ## Requirements
 
-- **Autodesk Revit 2024, 2025, or 2026**
+- **Autodesk Revit 2024, 2025, 2026, or 2027**
+  - *Revit 2027 runs on .NET 10; use a pyRevit build that supports Revit 2027.*
 - **pyRevit** installed and loaded in Revit (see Step 0 above)
 - **Windows 10/11**
 - **Internet connection**

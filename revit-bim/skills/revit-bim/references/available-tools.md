@@ -725,7 +725,7 @@ Switch the active view in Revit to the specified view. Use `list_revit_views` fi
 
 ---
 
-## ANALYZE Tools (4)
+## ANALYZE Tools (5)
 
 ### ai_element_filter
 
@@ -779,6 +779,36 @@ Get element counts grouped by category for model health checks and progress trac
 
 ---
 
+### check_clashes
+
+Detect hard clashes (geometric interferences) between elements using Revit's native interference logic — the core of BIM coordination (e.g. ducts through beams, pipes through walls). Returns clashing element pairs with ids, names, categories, and the approximate clash location in mm.
+
+**Scope rules:**
+- No categories given → a default physical scope (architectural + structural + MEP) is checked against itself.
+- Only `set_a_categories` given → checked against itself.
+- Both given → cross-discipline check (e.g. structure vs MEP).
+
+Categories accept BuiltInCategory ids (`"OST_DuctCurves"`) or friendly aliases (`"ducts"`, `"pipes"`, `"beams"`, `"walls"`, `"structural framing"`).
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `set_a_categories` | array[string] | No | First element set, e.g. `["beams", "OST_StructuralColumns"]` |
+| `set_b_categories` | array[string] | No | Second set to check against, e.g. `["ducts", "pipes"]` |
+| `max_clashes` | int | No | Max clashes to return (defaults to 200) |
+
+**Example — find structure vs MEP clashes:**
+```json
+{
+  "set_a_categories": ["structural framing", "structural columns"],
+  "set_b_categories": ["ducts", "pipes", "cable trays"]
+}
+```
+
+> Note: auto-joined concrete members and geometry-less elements (e.g. rebar) are not reported by Revit's interference logic.
+
+---
+
 ## DOCUMENT Tools (3)
 
 ### create_dimensions
@@ -806,7 +836,7 @@ Export a view or sheet to PDF, image, or DWG format.
 
 ---
 
-## INTEROP Tools (2)
+## INTEROP & PERSISTENCE Tools (4)
 
 ### export_ifc
 
@@ -832,22 +862,45 @@ Export the Revit model to IFC format. Supports IFC2x3 and IFC4.
 
 ### link_file
 
-Link or import an external file into the Revit model. Supports DWG, DXF, DGN, and RVT.
+Link or import an external file into the Revit model. Supports DWG, DXF, DGN, SAT, SKP, 3DM, and RVT (SAT/SKP/3DM are import-only). Use this to bring in detailed external geometry (e.g. a detailed building model) for high fidelity.
 
 **Parameters:**
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `file_path` | string | Yes | Path to the file (DWG, DXF, DGN, or RVT) |
-| `mode` | string | No | `"link"` (default, maintains connection) or `"import"` (embeds copy) |
+| `file_path` | string | Yes | Path to the file (DWG, DXF, DGN, SAT, SKP, 3DM, or RVT) |
+| `mode` | string | No | `"link"` (default; DWG/DXF/DGN/RVT only) or `"import"` (embeds copy) |
 | `position` | object | No | Placement offset `{"x", "y", "z"}` in mm |
 
 **Example:**
 ```json
 {
-  "file_path": "C:\\CAD\\site_plan.dwg",
-  "mode": "link"
+  "file_path": "C:\\Models\\detailed_tower.sat",
+  "mode": "import"
 }
 ```
+
+---
+
+### load_family
+
+Load a Revit family (`.rfa`) from disk into the active document so its types become available to `place_family`. Use when a needed component (furniture, doors, windows, equipment) is not already loaded.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `file_path` | string | Yes | Full path to a `.rfa` family file |
+
+---
+
+### save_document
+
+Save the active model to disk so work persists across sessions/restarts. Performs Save-As when a `file_path` is given (or the model was never saved), else saves in place.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `file_path` | string | No | Full `.rvt` path for Save-As (required the first time a template-based model is saved) |
+| `overwrite` | bool | No | Overwrite an existing file (default: true) |
 
 ---
 
@@ -889,8 +942,8 @@ Execute IronPython 2.7 code directly in Revit's context. Use as an escape hatch 
 | Create | 15 | create_level, create_line_based_element, create_surface_based_element, place_family, create_grid, create_structural_framing, create_sheet, create_schedule, create_room, create_room_separation, create_duct, create_pipe, create_mep_system, create_detail_line, create_view |
 | Query | 12 | get_revit_status, get_revit_model_info, list_levels, get_current_view_info, get_current_view_elements, list_revit_views, get_revit_view, list_families, list_family_categories, get_selected_elements, list_category_parameters, get_element_properties |
 | Modify | 8 | delete_elements, modify_element, color_splash, clear_colors, tag_walls, set_parameter, tag_elements, transform_elements, set_active_view |
-| Analyze | 4 | ai_element_filter, export_room_data, get_material_quantities, analyze_model_statistics |
+| Analyze | 5 | ai_element_filter, export_room_data, get_material_quantities, analyze_model_statistics, check_clashes |
 | Document | 3 | create_dimensions, export_document, create_schedule |
-| Interop | 2 | export_ifc, link_file |
+| Interop & Persistence | 4 | export_ifc, link_file, load_family, save_document |
 | Advanced | 1 | execute_revit_code |
-| **Total** | **45** | |
+| **Total** | **48** | |

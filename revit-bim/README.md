@@ -1,6 +1,6 @@
 # Revit BIM Plugin
 
-Natural-language building design and BIM management for Autodesk Revit 2024/2025/2026.
+Natural-language building design and BIM management for Autodesk Revit 2024/2025/2026/2027.
 
 Architects, structural engineers, and MEP engineers describe what they want in plain English — Claude creates, modifies, and analyzes BIM elements in the live Revit model.
 
@@ -53,6 +53,6 @@ All tools accept **millimeters (mm)**. The server converts to Revit's internal f
 
 ## Requirements
 
-- Autodesk Revit 2024, 2025, or 2026
+- Autodesk Revit 2024, 2025, 2026, or 2027
 - pyRevit installed and loaded with Routes enabled (see main README for install steps)
 - Windows 10/11

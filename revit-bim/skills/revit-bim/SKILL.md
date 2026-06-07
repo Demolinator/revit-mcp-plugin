@@ -13,7 +13,7 @@ version: 2.0.0
 
 # Revit BIM Design
 
-Create, modify, and analyze building designs in Autodesk Revit 2024/2025/2026 through natural language. All building professionals — architects, structural engineers, MEP engineers, and interior designers — describe what they want, and elements are created automatically via 45 MCP tools connected to the live Revit model.
+Create, modify, and analyze building designs in Autodesk Revit 2024/2025/2026/2027 through natural language. All building professionals — architects, structural engineers, MEP engineers, and interior designers — describe what they want, and elements are created automatically via 48 MCP tools connected to the live Revit model.
 
 ## Core Principles
 
