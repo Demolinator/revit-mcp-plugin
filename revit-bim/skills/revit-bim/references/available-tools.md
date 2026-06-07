@@ -836,7 +836,7 @@ Export a view or sheet to PDF, image, or DWG format.
 
 ---
 
-## INTEROP Tools (2)
+## INTEROP & PERSISTENCE Tools (4)
 
 ### export_ifc
 
@@ -862,22 +862,45 @@ Export the Revit model to IFC format. Supports IFC2x3 and IFC4.
 
 ### link_file
 
-Link or import an external file into the Revit model. Supports DWG, DXF, DGN, and RVT.
+Link or import an external file into the Revit model. Supports DWG, DXF, DGN, SAT, SKP, 3DM, and RVT (SAT/SKP/3DM are import-only). Use this to bring in detailed external geometry (e.g. a detailed building model) for high fidelity.
 
 **Parameters:**
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `file_path` | string | Yes | Path to the file (DWG, DXF, DGN, or RVT) |
-| `mode` | string | No | `"link"` (default, maintains connection) or `"import"` (embeds copy) |
+| `file_path` | string | Yes | Path to the file (DWG, DXF, DGN, SAT, SKP, 3DM, or RVT) |
+| `mode` | string | No | `"link"` (default; DWG/DXF/DGN/RVT only) or `"import"` (embeds copy) |
 | `position` | object | No | Placement offset `{"x", "y", "z"}` in mm |
 
 **Example:**
 ```json
 {
-  "file_path": "C:\\CAD\\site_plan.dwg",
-  "mode": "link"
+  "file_path": "C:\\Models\\detailed_tower.sat",
+  "mode": "import"
 }
 ```
+
+---
+
+### load_family
+
+Load a Revit family (`.rfa`) from disk into the active document so its types become available to `place_family`. Use when a needed component (furniture, doors, windows, equipment) is not already loaded.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `file_path` | string | Yes | Full path to a `.rfa` family file |
+
+---
+
+### save_document
+
+Save the active model to disk so work persists across sessions/restarts. Performs Save-As when a `file_path` is given (or the model was never saved), else saves in place.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `file_path` | string | No | Full `.rvt` path for Save-As (required the first time a template-based model is saved) |
+| `overwrite` | bool | No | Overwrite an existing file (default: true) |
 
 ---
 
@@ -921,6 +944,6 @@ Execute IronPython 2.7 code directly in Revit's context. Use as an escape hatch 
 | Modify | 8 | delete_elements, modify_element, color_splash, clear_colors, tag_walls, set_parameter, tag_elements, transform_elements, set_active_view |
 | Analyze | 5 | ai_element_filter, export_room_data, get_material_quantities, analyze_model_statistics, check_clashes |
 | Document | 3 | create_dimensions, export_document, create_schedule |
-| Interop | 2 | export_ifc, link_file |
+| Interop & Persistence | 4 | export_ifc, link_file, load_family, save_document |
 | Advanced | 1 | execute_revit_code |
-| **Total** | **46** | |
+| **Total** | **48** | |

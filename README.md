@@ -2,7 +2,7 @@
 
 Natural-language building design for Autodesk Revit 2024/2025/2026/2027 via Claude.
 
-Describe buildings in plain English — Claude creates BIM elements in Revit automatically. 46 MCP tools (including clash detection) for architects, structural engineers, and MEP engineers.
+Describe buildings in plain English — Claude creates BIM elements in Revit automatically. 48 MCP tools (including clash detection) for architects, structural engineers, and MEP engineers.
 
 ## How It Works
 

@@ -11,7 +11,7 @@
     {
       "name": "revit-bim",
       "source": "./revit-bim",
-      "description": "Natural-language building design and BIM management for Autodesk Revit 2024/2025/2026/2027. 46 MCP tools (incl. clash detection) for architects, structural engineers, and MEP engineers.",
+      "description": "Natural-language building design and BIM management for Autodesk Revit 2024/2025/2026/2027. 48 MCP tools (incl. clash detection & model save) for architects, structural engineers, and MEP engineers.",
       "version": "2.2.0",
       "author": {
         "name": "Talal Ahmed",

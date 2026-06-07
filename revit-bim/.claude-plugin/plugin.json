@@ -1,6 +1,6 @@
 {
   "name": "revit-bim",
-  "description": "Natural-language building design and BIM management for Autodesk Revit 2024/2025/2026/2027. All Revit professionals — architects, structural engineers, MEP engineers — describe what they want in plain English, and Claude creates, modifies, and analyzes BIM elements in the live Revit model via 46 MCP tools (including clash detection).",
+  "description": "Natural-language building design and BIM management for Autodesk Revit 2024/2025/2026/2027. All Revit professionals — architects, structural engineers, MEP engineers — describe what they want in plain English, and Claude creates, modifies, and analyzes BIM elements in the live Revit model via 48 MCP tools (including clash detection).",
   "author": {
     "name": "Talal Ahmed",
     "email": "talal@demolinator.com"
