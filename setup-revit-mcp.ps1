@@ -51,8 +51,17 @@ if ($DryRun) {
     throw "MCP server not found at $ServerDir (expected main.py). Clone/download it first."
   }
   Push-Location $ServerDir
-  try { & uv sync 2>&1 | Out-Null; Ok "Dependencies installed (uv sync)" }
-  finally { Pop-Location }
+  try {
+    # uv writes progress to stderr; under ErrorActionPreference=Stop PowerShell 5.1
+    # raises that as a fatal NativeCommandError even on success. Drop to Continue
+    # around the native call and gate on the exit code instead.
+    $prevEAP = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    & uv sync | Out-Null
+    $code = $LASTEXITCODE
+    $ErrorActionPreference = $prevEAP
+    if ($code -ne 0) { throw "uv sync failed (exit $code)" }
+    Ok "Dependencies installed (uv sync)"
+  } finally { Pop-Location }
 }
 
 # ---- 2. pyRevit Routes ----

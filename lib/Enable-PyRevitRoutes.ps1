@@ -22,13 +22,17 @@ function Enable-PyRevitRoutes {
       "pyRevit CLI not found. Enable manually: pyRevit tab > Settings > Routes > Enable Routes Server (port $Port) > Save Settings, then restart Revit." }
   }
 
+  # pyRevit writes to stderr; under a caller's ErrorActionPreference=Stop that
+  # would be raised as a fatal NativeCommandError. Drop to Continue for the
+  # native calls so this function behaves the same regardless of caller state.
+  $prevEAP = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
   try {
     # Persistent config settings; once enabled, Routes loads with Revit.
-    & $cli configs routes port $Port 2>&1 | Out-Null
-    & $cli configs routes enable 2>&1 | Out-Null
+    & $cli configs routes port $Port | Out-Null
+    & $cli configs routes enable | Out-Null
 
     # Confirm the config now reports Enabled.
-    $status = (& $cli configs routes 2>&1 | Out-String)
+    $status = (& $cli configs routes | Out-String)
     if ($status -match 'Enabled') {
       return @{ ok = $true; method = 'cli'; message = "Routes enabled on port $Port (restart Revit to apply if it was off)." }
     }
@@ -36,5 +40,7 @@ function Enable-PyRevitRoutes {
   } catch {
     return @{ ok = $false; method = 'manual'; message =
       "pyRevit CLI call failed: $($_.Exception.Message). Enable manually via pyRevit > Settings > Routes." }
+  } finally {
+    $ErrorActionPreference = $prevEAP
   }
 }
