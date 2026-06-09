@@ -1,34 +1,51 @@
 # Connectors
 
-## ~~revit
+## revit
 
-The Revit MCP Server connects Claude to Autodesk Revit 2024/2025/2026/2027 via the Model Context Protocol. It provides 48 tools for building design, model editing, structural systems, MEP, documentation, analysis, clash detection, and model persistence.
+The Revit MCP Server connects Claude to Autodesk Revit 2024/2025/2026/2027 via the Model
+Context Protocol. It provides 48 tools for building design, model editing, structural
+systems, MEP, documentation, analysis, clash detection, and model persistence.
 
-**Connection**: Uses a permanent ngrok tunnel. Run `start-revit-mcp.bat` on your machine before using Cowork.
+**Default connection (no tunnel):** Claude Desktop launches the server locally over
+**stdio** and bridges it into Cowork. No ngrok, no account, no terminal.
 
 ## Connection Flow
 
 ```
-Claude Cowork --> HTTPS (ngrok tunnel) --> MCP Server (localhost:8000) --> pyRevit Routes (:48884) --> Revit API
+Claude Desktop / Cowork --stdio--> local MCP server --HTTP :48884--> pyRevit Routes --> Revit API
 ```
 
 ## Prerequisites
 
-- **Autodesk Revit 2024/2025/2026/2027** installed and running with a project open
-- **pyRevit** installed and loaded (provides Routes on port 48884)
-- **start-revit-mcp.bat** running on your machine (starts MCP server + tunnel)
+- **Autodesk Revit 2024/2025/2026/2027** open with a project
+- **pyRevit** installed; Routes enabled on port 48884 (the setup script does this automatically)
+- One-time `setup-revit-mcp.bat` (writes the `revit` connector into `claude_desktop_config.json`)
 
 ## Setup
 
-1. Run `setup-revit-mcp.bat` once (installs dependencies, configures tunnel, generates this plugin)
-2. Run `start-revit-mcp.bat` before each Cowork session
+1. Run `setup-revit-mcp.bat` once (installs deps, enables Routes, writes the connector).
+2. Restart Claude Desktop — `revit` appears in Connectors.
+3. Open Revit + Claude; tools are live. Nothing to run per session.
+
+## Other MCP clients
+
+Cursor, Windsurf, Cline, VS Code, and Claude Code use the same local stdio command — see
+`skills/revit-bim/references/mcp-clients.md`.
+
+## Optional: web / mobile (ngrok)
+
+To use from claude.ai web or phone, run `setup-web-mobile.bat` to configure an ngrok tunnel
+and a remote connector:
+
+```
+claude.ai (web/phone) --HTTPS--> ngrok tunnel --> local MCP server (--http :8000) --> pyRevit :48884 --> Revit
+```
 
 ## Troubleshooting
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| "Failed to connect to Revit" | Start script not running | Run `start-revit-mcp.bat` |
-| "No active Revit document" | Revit not open or no project | Open Revit with a project file |
-| "Connection refused on 48884" | pyRevit Routes not active | Check pyRevit is installed (pyRevit tab in Revit ribbon) |
-| Tools return errors | Invalid family type names | Call `list_families` or `list_family_categories` first |
-| Tunnel URL not working | ngrok session expired | Restart `start-revit-mcp.bat` |
+| `revit` not in Connectors | Desktop not restarted | Fully quit and reopen Claude Desktop |
+| "No active Revit document" | Revit not open | Open Revit with a project |
+| "Connection refused on 48884" | pyRevit Routes not loaded | Re-run setup, or enable pyRevit > Settings > Routes |
+| Tools return errors | Invalid type names | Call `list_families` / `list_family_categories` first |
