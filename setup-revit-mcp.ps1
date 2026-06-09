@@ -15,8 +15,12 @@
 param(
   [switch] $DryRun,
   [string] $ServerDir,
+  [string] $ConfigPath,
   [switch] $EnableWebMobile
 )
+
+$MCP_REPO_URL = "https://github.com/Demolinator/revit-mcp-server.git"
+$MCP_ZIP_URL  = "https://github.com/Demolinator/revit-mcp-server/archive/refs/heads/master.zip"
 
 $ErrorActionPreference = "Stop"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -47,8 +51,41 @@ if ($DryRun) {
   $uv = (Get-Command uv -ErrorAction SilentlyContinue).Source
   if (-not $uv) { throw "uv not found. Install it from https://docs.astral.sh/uv/ then re-run." }
   Ok "uv found ($uv)"
+
   if (-not (Test-Path (Join-Path $ServerDir "main.py"))) {
-    throw "MCP server not found at $ServerDir (expected main.py). Clone/download it first."
+    Info "MCP server not found locally. Downloading from GitHub..."
+    if (Test-Path $ServerDir) { Remove-Item $ServerDir -Recurse -Force -ErrorAction SilentlyContinue }
+    $parent = Split-Path $ServerDir
+    if ($parent -and -not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
+    $downloaded = $false
+    # Method 1: git clone (if git is available)
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+      $tmp = Join-Path $env:TEMP ("revit-mcp-clone-" + [guid]::NewGuid().ToString("N"))
+      $prevEAP = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+      & git clone --depth 1 $MCP_REPO_URL $tmp | Out-Null
+      $code = $LASTEXITCODE
+      $ErrorActionPreference = $prevEAP
+      if ($code -eq 0 -and (Test-Path (Join-Path $tmp "main.py"))) {
+        Move-Item -Force $tmp $ServerDir; $downloaded = $true; Ok "Server downloaded (git clone)"
+      } elseif (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+    # Method 2: ZIP download (no git required)
+    if (-not $downloaded) {
+      $zip = Join-Path $env:TEMP ("revit-mcp-" + [guid]::NewGuid().ToString("N") + ".zip")
+      $ext = Join-Path $env:TEMP ("revit-mcp-ext-" + [guid]::NewGuid().ToString("N"))
+      $ProgressPreference = 'SilentlyContinue'
+      Invoke-WebRequest -Uri $MCP_ZIP_URL -OutFile $zip -UseBasicParsing
+      Expand-Archive -Path $zip -DestinationPath $ext -Force
+      $inner = Get-ChildItem -Path $ext -Directory | Select-Object -First 1
+      if ($inner -and (Test-Path (Join-Path $inner.FullName "main.py"))) {
+        Move-Item -Force $inner.FullName $ServerDir; $downloaded = $true; Ok "Server downloaded (ZIP)"
+      }
+      Remove-Item $zip -Force -ErrorAction SilentlyContinue
+      Remove-Item $ext -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    if (-not $downloaded) { throw "Could not download the MCP server. Check your internet connection." }
+  } else {
+    Ok "MCP server found at $ServerDir"
   }
   Push-Location $ServerDir
   try {
@@ -75,7 +112,7 @@ if ($DryRun) {
 
 # ---- 3. Claude Desktop connector ----
 Section "Claude Desktop connector"
-$cfg = Find-ClaudeConfig
+$cfg = if ($ConfigPath) { $ConfigPath } else { Find-ClaudeConfig }
 Info "Config path: $cfg"
 if ($DryRun) {
   Info "Would write mcpServers.revit connector (stdio) pointing at:"
