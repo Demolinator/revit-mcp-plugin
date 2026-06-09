@@ -85,6 +85,7 @@ Detailed conversion rules: `references/unit-handling.md`
 - **Coordinate system.** Revit uses a right-hand coordinate system. X is east, Y is north, Z is up. All coordinates in mm.
 - **Batch efficiently.** Create tools accept arrays. Group similar elements (e.g., all exterior walls) into one call.
 - **pyRevit Routes port.** The server communicates with Revit on port 48884 (pyRevit default, not configurable).
+- **Transport.** Default is local **stdio** — Claude Desktop launches the server and bridges it into Cowork (no tunnel). ngrok is optional, for claude.ai web/phone only. Tool behavior is identical across transports. Other MCP clients: see `references/mcp-clients.md`.
 
 ## Interaction Style
 
