@@ -1,5 +1,6 @@
-# MCP server (downloaded by setup script)
-mcp-server/
+# MCP server downloaded by setup script into the repo ROOT (anchored so the
+# vendored revit-bim/mcp-server/ that ships with the plugin is NOT ignored).
+/mcp-server/
 
 # Build artifacts
 dist/

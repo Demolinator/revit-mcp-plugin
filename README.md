@@ -12,7 +12,28 @@ Claude (Cowork/Desktop/Code) → MCP Server → pyRevit Routes → Revit API
 
 You speak naturally. Claude translates your intent into precise Revit operations.
 
-## Quick Setup (Claude Desktop / Cowork) — no ngrok
+## Easiest: install the plugin (one step)
+
+The `revit-bim` plugin **bundles the MCP server**, so installing it gives you everything at once — the **48 tools**, the BIM **skill**, and the **slash commands** — with no separate connector setup or config editing. The plugin's `.mcp.json` launches the bundled server via `uv run` (it creates its own environment on first run).
+
+**One-time machine prep** (can't be done by a plugin):
+- **Install pyRevit** and enable Routes — see [Step 0](#step-0-install-pyrevit) below. *(Or run `setup-revit-mcp.bat` once, which auto-enables Routes.)*
+- **Install `uv`** (the Python runner): https://docs.astral.sh/uv/ — one small install, on PATH.
+
+**Then install the plugin:**
+
+- **Claude Code (CLI):**
+  ```
+  /plugin marketplace add Demolinator/revit-mcp-plugin
+  /plugin install revit-bim@revit-mcp
+  ```
+- **Claude Desktop / Cowork:** use **Browse plugins** and install `revit-bim`.
+
+Open Revit with a project, (re)start Claude, and the `revit` tools + commands are live. Other MCP clients (Cursor, Windsurf, VS Code…) can use the same bundled server — see [`references/mcp-clients.md`](revit-bim/skills/revit-bim/references/mcp-clients.md).
+
+> Prefer to wire the MCP server **without** installing the plugin (e.g. for other AI tools, or tools-only)? Use the setup script below instead.
+
+## Alternative: MCP server only (setup script, no ngrok)
 
 Claude Desktop runs the MCP server **locally over stdio** and bridges it into Cowork.
 There is **no tunnel, no ngrok account, and no terminal to keep open**.
