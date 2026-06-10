@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "revit": {
-      "type": "http",
-      "url": "https://YOUR-DOMAIN.ngrok-free.app/mcp"
+      "command": "uv",
+      "args": ["run", "--directory", "${CLAUDE_PLUGIN_ROOT}/mcp-server", "main.py"]
     }
   }
 }
