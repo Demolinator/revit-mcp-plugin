@@ -23,6 +23,11 @@ Claude Desktop / Cowork --stdio--> local MCP server --HTTP :48884--> pyRevit Rou
 
 ## Setup
 
+**Easiest — install the plugin (it bundles this server):** installing `revit-bim` wires the
+`revit` connector automatically via its `.mcp.json` (`uv run` + `${CLAUDE_PLUGIN_ROOT}`), so you
+get tools + skill + commands in one step. One-time prep: pyRevit (Routes) + `uv` installed.
+
+**Or wire the server only (no plugin):**
 1. Run `setup-revit-mcp.bat` once (installs deps, enables Routes, writes the connector).
 2. Restart Claude Desktop — `revit` appears in Connectors.
 3. Open Revit + Claude; tools are live. Nothing to run per session.
