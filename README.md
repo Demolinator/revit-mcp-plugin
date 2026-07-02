@@ -53,14 +53,22 @@ There is **no tunnel, no ngrok account, and no terminal to keep open**.
 
 pyRevit is a free add-in that lets scripts run inside Revit. The MCP server talks to Revit through it.
 
-1. Go to https://github.com/pyrevitlabs/pyRevit/releases
-2. Under **Assets**, download the **.exe installer** (e.g. `pyRevit_CLI_4.8.x.x_admin_signed.exe`)
-3. Run it — accept defaults, **Next** through each screen, then **Install**
-4. Open Revit — you should see a **pyRevit** tab in the ribbon
+1. **Close Revit** if it is open.
+2. Go to https://github.com/pyrevitlabs/pyRevit/releases
+3. Under **Assets**, download the regular **.exe installer** (e.g. `pyRevit_4.8.x_signed.exe`).
+   *Avoid the `pyRevit_CLI_...` installers — those install only the command-line tool and do **not** add pyRevit to Revit.*
+4. Run it — accept defaults, **Next** through each screen, then **Install**
+5. Open Revit — you should see a **pyRevit** tab in the ribbon
+
+> **No pyRevit tab in the ribbon?** pyRevit is installed but not *attached* to your Revit version (common with the CLI installer). Fix it:
+> 1. Press the **Windows key**, type `cmd`, press Enter
+> 2. Run: `pyrevit attach master default 2027` *(replace `2027` with your Revit version: 2024, 2025, 2026, or 2027)*
+> 3. Check it worked: `pyrevit attached` should list your Revit version
+> 4. **Restart Revit** — the pyRevit tab should now appear
 
 The setup script in Step 2 **enables pyRevit Routes for you automatically**. (If it can't, enable it manually: pyRevit tab > Settings > Routes > **Enable Routes Server** > Save Settings.)
 
-**How to verify Routes:** browse to `http://localhost:48884/` with Revit open — any response means it's working.
+**How to verify Routes:** browse to `http://localhost:48884/` with Revit open — any response (even an error page) means it's working. If you get "can't reach this page", see the [Troubleshooting](#troubleshooting) table.
 
 ### Step 1: Download this repo
 
@@ -78,18 +86,20 @@ Double-click **`setup-revit-mcp.bat`**. It automatically:
 
 No ngrok. No account. No plugin ZIP to upload.
 
-### Step 3: Restart Claude Desktop
+### Step 3: Restart Revit and Claude Desktop
 
-Fully quit and reopen Claude Desktop so it loads the new connector. You'll see **`revit`** in the Connectors list, available in both Desktop chat and Cowork.
+1. **Restart Revit** if it was open while you ran setup (Routes only loads when Revit starts), and open a project.
+2. **Fully quit Claude Desktop**: right-click the Claude icon in the **system tray** (bottom-right corner of the taskbar, next to the clock — click the `^` arrow if it's hidden) and choose **Quit**. *Just clicking the X only closes the window — the app keeps running and won't pick up the new connector.*
+3. Reopen Claude Desktop. You'll see **`revit`** in the Connectors list, available in both Desktop chat and Cowork.
 
 ### Done — daily use
 
 1. Open Revit with a project (pyRevit Routes loads automatically).
 2. Open Claude Desktop / Cowork — the `revit` tools are live. **No terminal, no start script.**
 
-**Verify it loaded:** the log at
-`%LOCALAPPDATA%\Packages\<Claude package>\LocalCache\Roaming\Claude\logs\mcp-server-revit.log`
-shows `Server started and connected successfully`.
+**Verify it loaded:** the log file `mcp-server-revit.log` should show `Server started and connected successfully`. Where to find it (paste the path into the File Explorer address bar):
+- Standard install: `%APPDATA%\Claude\logs\`
+- Microsoft Store install: `%LOCALAPPDATA%\Packages\` then look inside the folder whose name starts with `AnthropicPBC.Claude`, under `LocalCache\Roaming\Claude\logs\`
 
 ### Use from other AI tools
 
@@ -106,16 +116,22 @@ connector. Not needed for Claude Desktop / Cowork.
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| `revit` not in Connectors | Desktop not restarted after setup | Fully quit and reopen Claude Desktop |
-| "Revit not detected on port 48884" | Revit not open or Routes off | Open Revit with a project; re-run setup or enable pyRevit > Settings > Routes |
+| No **pyRevit** tab in the Revit ribbon | pyRevit installed but not attached to your Revit version | Open Command Prompt, run `pyrevit attach master default <your Revit version>` (e.g. `2027`), then restart Revit. See the "No pyRevit tab" box in Step 0 |
+| `revit` not in Connectors | Desktop not restarted after setup | Fully quit Claude Desktop from the **system tray** (right-click icon > Quit) and reopen — closing the window is not enough |
+| "Revit not detected on port 48884" / `localhost:48884` won't load | Revit not open, Revit not restarted since setup, Routes off, or pyRevit not attached | Open Revit with a project (restart it if it was open during setup). Check the pyRevit tab exists (if not, see row above). Then check pyRevit > Settings > Routes > Enable Routes Server |
 | Setup script closes immediately | Windows blocked the script | Right-click `setup-revit-mcp.bat` > **Run as administrator** |
 | "uv not found" | uv not installed/PATH | Install uv from https://docs.astral.sh/uv/ and re-run |
 | Tools return errors | Invalid family type names | Ask Claude to call `list_families` / `list_family_categories` first |
 | Web/mobile (ngrok) issues | tunnel/domain/token | See ngrok troubleshooting inside `setup-web-mobile.ps1` output and https://dashboard.ngrok.com |
 
-## Quick Setup (Claude Code CLI)
+## For developers: manual configs
 
-### Option A: Marketplace
+> **Already ran `setup-revit-mcp.bat` or installed the plugin? You are done — skip this section.**
+> These are *alternative* manual setups for developers and other MCP clients.
+
+### Quick Setup (Claude Code CLI)
+
+#### Option A: Marketplace
 
 ```bash
 /plugin marketplace add Demolinator/revit-mcp-plugin
@@ -137,7 +153,7 @@ Then configure the MCP server connection in your project:
 }
 ```
 
-### Option B: Direct MCP server
+#### Option B: Direct MCP server
 
 ```bash
 cd mcp-server
@@ -145,7 +161,7 @@ uv sync
 uv run main.py
 ```
 
-## Quick Setup (Claude Desktop / Any MCP Client)
+### Quick Setup (Claude Desktop / Any MCP Client)
 
 Add to your MCP client config:
 
