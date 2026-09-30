@@ -15,7 +15,7 @@
 
 **Please do not open a public issue for security problems.**
 
-Email **talal@demolinator.com** with a description, reproduction steps, and
+Email **talal.ahmed.work@proton.me** with a description, reproduction steps, and
 any suggested fix. You should get an acknowledgement within a few days.
 Vulnerabilities in the server itself can also be reported per
 [revit-mcp-server's SECURITY.md](https://github.com/Demolinator/revit-mcp-server/blob/master/SECURITY.md).
