@@ -1,0 +1,61 @@
+name: Bug report (plugin / setup)
+description: Installing the plugin, running the setup script, connecting Claude, or a slash command misbehaves
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If a specific **Revit tool** failed (e.g. `create_duct` placed the duct wrong), please report it in [revit-mcp-server](https://github.com/Demolinator/revit-mcp-server/issues/new/choose) instead.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where did it go wrong?
+      options:
+        - Plugin install (/plugin marketplace, Browse plugins)
+        - setup-revit-mcp (local setup)
+        - setup-web-mobile / start-revit-mcp (ngrok)
+        - Slash command (/revit-bim:...)
+        - Skill behavior (Claude used tools badly)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Script output or error
+      description: Paste the full console output. For setup problems, re-running with `-DryRun` is safe and helpful.
+      render: text
+  - type: dropdown
+    id: revit
+    attributes:
+      label: Revit version
+      multiple: true
+      options: ["2024", "2025", "2026", "2027", "Other / not relevant"]
+  - type: dropdown
+    id: client
+    attributes:
+      label: Client
+      options: ["Claude Code", "Claude Desktop (standard installer)", "Claude Desktop (Microsoft Store / MSIX)", "claude.ai web / mobile", "Other MCP client"]
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Plugin, pyRevit, and uv versions
+      placeholder: "plugin 2.3.0, pyRevit 5.1.0, uv 0.11.x"
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this isn't a duplicate
+          required: true
+        - label: I removed tokens, ngrok auth tokens, and private paths/project names from the output
+          required: true
