@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: A Revit tool fails or returns wrong results
+    url: https://github.com/Demolinator/revit-mcp-server/issues/new/choose
+    about: Tool and Revit-behavior bugs (walls, families, MEP, exports…) belong in revit-mcp-server.
+  - name: Security vulnerability
+    url: https://github.com/Demolinator/revit-mcp-plugin/blob/main/SECURITY.md
+    about: Please report security issues privately, not as a public issue.

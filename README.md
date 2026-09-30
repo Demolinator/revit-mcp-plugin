@@ -227,6 +227,10 @@ revit-mcp-plugin/
 
 No Python, Git, or developer tools required — the setup script installs everything.
 
+## Contributing
+
+Contributions are welcome! See **[CONTRIBUTING.md](CONTRIBUTING.md)** for how the plugin, skill, commands, and setup scripts fit together, and which repo a change belongs in. Revit tools themselves are developed in [revit-mcp-server](https://github.com/Demolinator/revit-mcp-server) (see its [good first issues](https://github.com/Demolinator/revit-mcp-server/labels/good%20first%20issue)).
+
 ## Author
 
 **Talal Ahmed**
